@@ -74,6 +74,9 @@ file_name = "Result_" + cur_date_time + ".txt"
 separator = "-----------------------------------------\n"
 names_dict = {}
 file_types_set = set()
+list_to_do = (('idw', 'pdf'),
+             ('iam', 'idw'),
+             ('ipt', 'idw'))
 
 
 # Makes dictionary with all files information
@@ -98,11 +101,9 @@ file = open(file_name, "w")
 print("Date: {0}\nTime: {1:0>2}:{2:0>2}".format(str(cur_date),str(cur_time.hour), str(cur_time.minute)), file = file)
 print("Curren directory: {}\n".format(cur_path), file = file)
 
-idw_without_pdf = make_list_without()
-idw_with_pdf = make_dict_with()
-idw_without_dwg = make_list_without("idw", "dwg")
-idw_with_dwg = make_dict_with("idw", "dwg")
-
+for task in list_to_do:
+    make_list_without(task[0], task[1])
+    make_dict_with(task[0], task[1])
 
 file.close()
 
