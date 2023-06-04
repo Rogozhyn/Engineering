@@ -16,6 +16,57 @@ def make_names_dict(files_path):
     return names_dict_def
 
 
+def get_search_deep():
+    global search_deep
+    print('''
+         1 - if it is need only files from current folder
+         2 - if it is need files from current folder and sub-folders
+         3 - if it is need to search files in folders 02_CAD and 05_PDF
+         4 - if it is need to search files in folder 02_CAD and 09_Project kit
+            ''')
+    search_deep = int(input('Please enter index of search deep (1, 2, 3, 4): '))
+
+
+def make_search_deep():
+    # Makes dictionary with all files information
+    if search_deep == 1:
+        names_dict.update(make_names_dict(work_path))
+    elif search_deep == 2:
+        tree = os.walk(work_path)
+        for i in tree:
+            names_dict.update(make_names_dict(i[0]))
+    elif search_deep == 3:
+        tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
+        for i in tree_1:
+            names_dict.update(make_names_dict(i[0]))
+        tree_2 = os.walk(os.path.join(work_path, '05_2D Drawings PDF'))
+        tree_list = []
+        for i in tree_2:
+            tree_list.append(i[0])
+            names_dict.update(make_names_dict(tree_list[-1]))
+        print('\nEnd search folder is: \n{}\n'.format(tree_list[-1]))
+    elif search_deep == 4:
+        tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
+        for i in tree_1:
+            names_dict.update(make_names_dict(i[0]))
+        tree_2 = os.walk(os.path.join(work_path, '09_Project kit\\01_PDF'))
+        for i in tree_2:
+            names_dict.update(make_names_dict(i[0]))
+    else:
+        print('Please chose search deep')
+
+
+def make_extensions_dict():
+    # Makes new dictionary with all extensions from set with all extensions
+    for type_ in file_types_set:
+        extensions_dict[type_] = []
+    # Adds file names to the list linked with the key
+    for key in extensions_dict:
+        for name in names_dict:
+            if names_dict[name]["File extension"] == key:
+                extensions_dict[key].append(names_dict[name]["File name"])
+
+
 def make_list_without(main_type, slave_type):
     # Makes list with main files, which have not pairs of slave files
     print("\n{0} files without {1} files:\n{2}".format(main_type, slave_type, separator), file=file)
@@ -68,81 +119,56 @@ def make_dict_with(main_type, slave_type):
         print("\n{}\n".format(separator), file=file)
 
 
+def make_list_todo():
+    global list_todo
+    list_todo = (('idw', 'pdf'),
+                 ('ipt', 'idw'),
+                 ('xls', 'pdf'),
+                 ('idw', 'dwg'),
+                 ('idw', 'dwf'),
+                 )
+    return list_todo
+
+
+def main():
+    print("Date: {0}\nTime: {1:0>2}:{2:0>2}".format(str(cur_date), str(cur_time.hour), str(cur_time.minute)), file=file)
+    print("Current directory: {}\n".format(work_path), file=file)
+
+    get_search_deep()
+    make_search_deep()
+    make_extensions_dict()
+
+    for task in make_list_todo():
+        make_list_without(task[0], task[1])
+        make_dict_with(task[0], task[1])
+
+    if 'pdf' in extensions_dict.keys():
+        print('Total: ', len(extensions_dict['pdf']), ' pdf files.', file=file)
+
+    file.close()
+
+    print('The result you can find in the file "{}" in the current directory'.format(file_name))
+    input('\nPress Enter')
+
+
 current_path = os.getcwd()
 # work_path = R'C:\Users\mrogozhyn\Desktop\test folder\folder 1\folder 1_1'
-# work_path = current_path
-work_path = input('Enter path: ')
+work_path = current_path
+# work_path = input('Enter path: ')
+
 cur_date = datetime.now().date()
 cur_time = datetime.now().time()
 cur_date_time = str(cur_date) + "_" + "{:0>2}".format(str(cur_time.hour)) + "{:0>2}".format(str(cur_time.minute))
+
 file_name = os.path.join(work_path, ("Result_" + cur_date_time + ".txt"))
-separator = "-----------------------------------------\n"
-names_dict = {}
-file_types_set = set()
-list_to_do = (('idw', 'pdf'),
-              ('ipt', 'idw'),
-              ('xls', 'pdf'),
-              ('idw', 'dwg'),
-              ('idw', 'dwf'),
-              )
-print('''
- 1 - if it is need only files from current folder
- 2 - if it is need files from current folder and sub-folders
- 3 - if it is need to search files in folders 02_CAD and 05_PDF
- 4 - if it is need to search files in folder 02_CAD and 09_Project kit
-    ''')
-search_deep = int(input('Please enter index of search deep (1, 2, 3, 4): '))
-
-# Makes dictionary with all files information
-if search_deep == 1:
-    names_dict.update(make_names_dict(work_path))
-elif search_deep == 2:
-    tree = os.walk(work_path)
-    for i in tree:
-        names_dict.update(make_names_dict(i[0]))
-elif search_deep == 3:
-    tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
-    for i in tree_1:
-        names_dict.update(make_names_dict(i[0]))
-    tree_2 = os.walk(os.path.join(work_path, '05_2D Drawings PDF'))
-    tree_list = []
-    for i in tree_2:
-        tree_list.append(i[0])
-        names_dict.update(make_names_dict(tree_list[-1]))
-    print('\nEnd search folder is: \n{}\n'.format(tree_list[-1]))
-elif search_deep == 4:
-    tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
-    for i in tree_1:
-        names_dict.update(make_names_dict(i[0]))
-    tree_2 = os.walk(os.path.join(work_path, '09_Project kit\\01_PDF'))
-    for i in tree_2:
-        names_dict.update(make_names_dict(i[0]))
-else:
-    print('Please chose search deep')
-
-# Makes new dictionary with all extensions from set with all extensions
-extensions_dict = {}
-for type_ in file_types_set:
-    extensions_dict[type_] = []
-# Adds file names to the list linked with the key
-for key in extensions_dict:
-    for name in names_dict:
-        if names_dict[name]["File extension"] == key:
-            extensions_dict[key].append(names_dict[name]["File name"])
-
 file = open(file_name, "w")
 
-print("Date: {0}\nTime: {1:0>2}:{2:0>2}".format(str(cur_date), str(cur_time.hour), str(cur_time.minute)), file=file)
-print("Current directory: {}\n".format(work_path), file=file)
+separator = "-----------------------------------------\n"
+names_dict = {}
+extensions_dict = {}
+file_types_set = set()
+list_todo = tuple()
+search_deep = 1
 
-for task in list_to_do:
-    make_list_without(task[0], task[1])
-    make_dict_with(task[0], task[1])
-
-if 'pdf' in extensions_dict.keys():
-    print('Total: ', len(extensions_dict['pdf']), ' pdf files.', file=file)
-
-file.close()
-
-print('The result you can find in the file "{}" in the current directory'.format(file_name))
-input('\nPress Enter')
+if __name__ == '__main__':
+    main()
