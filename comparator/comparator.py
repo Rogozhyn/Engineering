@@ -4,10 +4,7 @@ cur_path = os.getcwd()
 #cur_path = "C:\\Users\\mrogozhyn\\Desktop\\test folder\\folder 1\\folder 1_1"
 
 print("Curren directory:\n", cur_path,)
-print("\nCurren directory files and folders:\n---------------------------------------")
-for item in os.listdir(cur_path):
-    print(item)
-print("---------------------------------------\n")
+
 
 names_dict = {}
 for name in os.listdir(cur_path):
@@ -28,30 +25,27 @@ for key in extensions_dict:
         if names_dict[name]["File extension"] == key:
             extensions_dict[key].append(names_dict[name]["File name"])
 
-for key in extensions_dict:
-    print(key, " files: ", extensions_dict[key], "| total: ", len(extensions_dict[key]))
-
-idw_with_pdf_list = list(set(extensions_dict["idw"]) & set(extensions_dict["pdf"]))
-print("\nidw files with pdf files:\n---------------------------------------")
-for item in idw_with_pdf_list:
+main_with_second_list = list(set(extensions_dict[file_types_list[0]]) & set(extensions_dict[file_types_list[1]]))
+print("\n {0} files with {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[1]))
+for item in main_with_second_list:
     print(item)
 print("---------------------------------------\n")
 
-idw_without_pdf_list = list(set(extensions_dict["idw"]) - set(extensions_dict["pdf"]))
-print("idw files without pdf files:\n---------------------------------------")
-for item in idw_without_pdf_list:
+main_without_second_list = list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[1]]))
+print("\n {0} files without {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[1]))
+for item in main_without_second_list:
     print(item)
 print("---------------------------------------\n")
 
-idw_with_dwg_list = list(set(extensions_dict["idw"]) & set(extensions_dict["dwg"]))
-print("idw files with dwg files:\n---------------------------------------")
-for item in idw_with_dwg_list:
+main_with_third_list = list(set(extensions_dict[file_types_list[0]]) & set(extensions_dict[file_types_list[2]]))
+print("\n {0} files with {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[2]))
+for item in main_with_third_list:
     print(item)
 print("---------------------------------------\n")
 
-idw_without_dwg_list = list(set(extensions_dict["idw"]) - set(extensions_dict["dwg"]))
-print("idw files without dwg files:\n---------------------------------------")
-for item in idw_without_dwg_list:
+main_without_third_list = list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[2]]))
+print("\n {0} files without {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[2]))
+for item in main_without_third_list:
     print(item)
 print("---------------------------------------\n")
 
