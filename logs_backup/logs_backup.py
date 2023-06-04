@@ -2,12 +2,13 @@ import os
 import datetime
 import zipfile
 
-archives = ('U:\\Users\\mrogozhyn\\Desktop\\Logs backups',
+archives = ('D:\\Users\\Mykhailo Rogozhyn\\Desktop\\Logs backups',
             'Q:\\01_Backup\\Logs backups',
             'Q:\\02_Google drive\\03_imihanick\\ФОП Рогожин\\02_Logs backups')
 
 logs = (('0103-00-000.00', 'W:\\03_Workspace', '0103-00-000.00_Книга учета времени.ods'),
-        ('0104-00-000.00', 'W:\\03_Workspace Pavalex', '0104-00-000.00_Книга учета времени.ods')
+        ('0104-00-000.00', 'W:\\03_Workspace Pavalex', '0104-00-000.00_Книга учета времени.ods'),
+        ('Spending and income', 'W:\\01_General\\03_Management\\03_Бухучет', 'Учет расходов и доходов.ods'),
         )
 
 year_string = datetime.date.today().strftime("%Y")
