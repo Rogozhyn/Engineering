@@ -68,11 +68,14 @@ def make_dict_with(main_type, slave_type):
         print("\n{}\n".format(separator), file=file)
 
 
-cur_path = os.getcwd()
+current_path = os.getcwd()
+# work_path = R'C:\Users\mrogozhyn\Desktop\test folder\folder 1\folder 1_1'
+# work_path = current_path
+work_path = input('Enter path: ')
 cur_date = datetime.now().date()
 cur_time = datetime.now().time()
 cur_date_time = str(cur_date) + "_" + "{:0>2}".format(str(cur_time.hour)) + "{:0>2}".format(str(cur_time.minute))
-file_name = "Result_" + cur_date_time + ".txt"
+file_name = os.path.join(work_path, ("Result_" + cur_date_time + ".txt"))
 separator = "-----------------------------------------\n"
 names_dict = {}
 file_types_set = set()
@@ -92,26 +95,26 @@ search_deep = int(input('Please enter index of search deep (1, 2, 3, 4): '))
 
 # Makes dictionary with all files information
 if search_deep == 1:
-    names_dict.update(make_names_dict(cur_path))
+    names_dict.update(make_names_dict(work_path))
 elif search_deep == 2:
-    tree = os.walk(cur_path)
+    tree = os.walk(work_path)
     for i in tree:
         names_dict.update(make_names_dict(i[0]))
 elif search_deep == 3:
-    tree_1 = os.walk(os.path.join(cur_path, '02_CAD Data'))
+    tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
     for i in tree_1:
         names_dict.update(make_names_dict(i[0]))
-    tree_2 = os.walk(os.path.join(cur_path, '05_2D Drawings PDF'))
+    tree_2 = os.walk(os.path.join(work_path, '05_2D Drawings PDF'))
     tree_list = []
     for i in tree_2:
         tree_list.append(i[0])
         names_dict.update(make_names_dict(tree_list[-1]))
     print('\nEnd search folder is: \n{}\n'.format(tree_list[-1]))
 elif search_deep == 4:
-    tree_1 = os.walk(os.path.join(cur_path, '02_CAD Data'))
+    tree_1 = os.walk(os.path.join(work_path, '02_CAD Data'))
     for i in tree_1:
         names_dict.update(make_names_dict(i[0]))
-    tree_2 = os.walk(os.path.join(cur_path, '09_Project kit\\01_PDF'))
+    tree_2 = os.walk(os.path.join(work_path, '09_Project kit\\01_PDF'))
     for i in tree_2:
         names_dict.update(make_names_dict(i[0]))
 else:
@@ -130,7 +133,7 @@ for key in extensions_dict:
 file = open(file_name, "w")
 
 print("Date: {0}\nTime: {1:0>2}:{2:0>2}".format(str(cur_date), str(cur_time.hour), str(cur_time.minute)), file=file)
-print("Current directory: {}\n".format(cur_path), file=file)
+print("Current directory: {}\n".format(work_path), file=file)
 
 for task in list_to_do:
     make_list_without(task[0], task[1])
