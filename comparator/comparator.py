@@ -1,31 +1,27 @@
 import os
 
-cur_path = os.getcwd()
+#cur_path = os.getcwd()
+cur_path = "C:\\Users\\mrogozhyn\\Desktop\\test folder\\folder 1\\folder 1_1"
 
-print("Текущая деректория:", cur_path)
+print("Curren directory:", cur_path)
+print("Curren directory files:", os.listdir(cur_path))
 
-names = [name for name in os.listdir(cur_path) if os.path.isfile(name)]
-names_idw = [name for name in names if name.endswith('.idw')]
-names_pdf = [name for name in names if name.endswith('.pdf')]
+names_dict = {}
+for name in os.listdir(cur_path):
+    if os.path.isfile(os.path.join(cur_path, name)):
+        names_dict[name] = {"File name": os.path.splitext(name)[0],
+                            "File extension" : os.path.splitext(os.path.join(cur_path, name))[1][1:],
+                            "File size" : os.path.getsize(os.path.join(cur_path, name)),
+                            "File mod. time" : os.path.getmtime(os.path.join(cur_path, name))}
 
-print("\nList of the all types of the files:")
-for name in names:
-    print(name)
-print("\nList of the pdf type of the files:")
-for name in names_pdf:
-    print(name)
-print("\nList of the idw type of the files:")
-for name in names_idw:
-    print(name)
+idw_list = []
+pdf_list = []
+for name in names_dict:
+    if names_dict[name]["File extension"] == "idw":
+        idw_list.append(names_dict[name]["File name"])
+    elif names_dict[name]["File extension"] == "pdf":
+        pdf_list.append(names_dict[name]["File name"])
 
-
-""" names_dict = {}
-for name in names_idw:
-    names_dict[name.rstrip(".idw")] = ["idw"]
-for name in names_pdf:
-    names_dict[name.rstrip(".pdf")].append("pdf")
-
-print(names_dict)
-     """
-
+print("idw files: ", idw_list)
+print("pdf files: ", pdf_list)
 input('')
