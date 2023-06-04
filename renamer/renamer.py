@@ -39,7 +39,8 @@ def make_new_name(input_dict):
 
 current_dir = os.getcwd()
 list_to_do = (('idw', 'dwg'),
-              ('idw', 'dwf'))
+              ('idw', 'dwf'),
+              ('ipt', 'dxf'))
 search_deep = int(input('Please enter index of search deep (1, 2): '))
 # 1 - if it is need only files from current folder
 # 2 - if it is need files from current folder and subfolders
