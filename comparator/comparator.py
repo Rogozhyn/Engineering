@@ -25,25 +25,13 @@ for key in extensions_dict:
         if names_dict[name]["File extension"] == key:
             extensions_dict[key].append(names_dict[name]["File name"])
 
-main_with_second_list = list(set(extensions_dict[file_types_list[0]]) & set(extensions_dict[file_types_list[1]]))
-print("\n {0} files with {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[1]))
-for item in main_with_second_list:
-    print(item)
-print("---------------------------------------\n")
-
-main_without_second_list = list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[1]]))
+main_without_second_list = sorted(list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[1]])))
 print("\n {0} files without {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[1]))
 for item in main_without_second_list:
     print(item)
 print("---------------------------------------\n")
 
-main_with_third_list = list(set(extensions_dict[file_types_list[0]]) & set(extensions_dict[file_types_list[2]]))
-print("\n {0} files with {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[2]))
-for item in main_with_third_list:
-    print(item)
-print("---------------------------------------\n")
-
-main_without_third_list = list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[2]]))
+main_without_third_list = sorted(list(set(extensions_dict[file_types_list[0]]) - set(extensions_dict[file_types_list[2]])))
 print("\n {0} files without {1} files:\n---------------------------------------".format(file_types_list[0], file_types_list[2]))
 for item in main_without_third_list:
     print(item)
