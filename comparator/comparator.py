@@ -75,16 +75,18 @@ separator = "-----------------------------------------\n"
 names_dict = {}
 file_types_set = set()
 list_to_do = (('idw', 'pdf'),
-             ('iam', 'idw'),
-             ('ipt', 'idw'))
+              ('iam', 'idw'),
+              ('ipt', 'idw'),
+              ('xls', 'pdf'),
+             )
 
 
 # Makes dictionary with all files information
-names_dict.update(make_names_dict(cur_path))
-for name in os.listdir(cur_path):
-    if os.path.isdir(os.path.join(cur_path, name)):
-        names_dict.update(make_names_dict(os.path.join(cur_path, name)))
-        
+# names_dict.update(make_names_dict(cur_path))
+# for name in os.listdir(cur_path):
+#     if os.path.isdir(os.path.join(cur_path, name)):
+#         names_dict.update(make_names_dict(os.path.join(cur_path, name)))
+names_dict.update(make_names_dict(cur_path))        
 
 # Makes new dictionary with all extensions from set with all extensions
 extensions_dict = {}
