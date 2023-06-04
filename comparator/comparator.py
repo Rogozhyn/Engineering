@@ -2,22 +2,36 @@ import os
 
 def make_list_without(main_type = "idw", slave_type = "pdf"):
     # Makes list with main files, which have not pairs of slave files
-    main_without_slave_list = sorted(list(set(extensions_dict[main_type]) - set(extensions_dict[slave_type])))
-    print("\n {0} files without {1} files:\n---------------------------------------".format(main_type, slave_type))
-    for number, item in enumerate(main_without_slave_list):
-        print(number+1,": ", item)
-    print("---------------------------------------\n")
-    return {"main type" : main_type, "slave type" : slave_type, "operation" : "main without slave", "list" : main_without_slave_list}
+    print("\n{0} files without {1} files:\n---------------------------------------".format(main_type, slave_type))
+    if main_type and slave_type in extensions_dict:
+        main_without_slave_list = sorted(list(set(extensions_dict[main_type]) - set(extensions_dict[slave_type])))
+        for number, name in enumerate(main_without_slave_list):
+            print("{0:>3} : {1}".format(number+1, name))
+        print("---------------------------------------\n")
+        return {"main type" : main_type, "slave type" : slave_type, "operation" : "main without slave", "list" : main_without_slave_list}
+    else:
+        if main_type not in extensions_dict:
+            print ("There are not {0} files".format(main_type))
+        if slave_type not in extensions_dict:
+            print ("There are not {0} files".format(slave_type))
+        print("---------------------------------------\n")
 
-def make_list_with (main_type = "idw", slave_type = "pdf"):
-    # Makes list with main files, which have pairs of slave files
-    main_with_slave_list = sorted(list(set(extensions_dict[main_type]) & set(extensions_dict[slave_type])))
-    print("\n {0} files with {1} files:\n---------------------------------------".format(main_type, slave_type))
-    for number, item in enumerate(main_with_slave_list):
-        print(number+1,": ", item)
-    print("---------------------------------------\n")
-    return {"main type" : main_type, "slave type" : slave_type, "operation" : "main with slave", "list" : main_with_slave_list}
-    
+def make_dict_with (main_type = "idw", slave_type = "pdf"):
+    # Makes dictionary with main files, which have pairs of slave files
+    print("\n{0} files with {1} files:\n---------------------------------------".format(main_type, slave_type))
+    if main_type and slave_type in extensions_dict:
+        main_with_slave_dict = {}
+        for number, name in enumerate(sorted(list(set(extensions_dict[main_type]) & set(extensions_dict[slave_type])))):
+            main_with_slave_dict[name] = round((names_dict[name + "." + main_type]["File mod. time"] - names_dict[name + "." + slave_type]["File mod. time"])/60)
+            print("{0:>3} : {1:<20} : {2:>5} minutes".format(number+1, name, main_with_slave_dict[name]))
+        print("---------------------------------------\n")
+        return {"main type" : main_type, "slave type" : slave_type, "operation" : "main with slave", "dictionary" : main_with_slave_dict}
+    else:
+        if main_type not in extensions_dict:
+            print ("There are not {0} files".format(main_type))
+        if slave_type not in extensions_dict:
+            print ("There are not {0} files".format(slave_type))
+        print("---------------------------------------\n")
 
 cur_path = os.getcwd()
 
@@ -46,11 +60,8 @@ for key in extensions_dict:
             extensions_dict[key].append(names_dict[name]["File name"])
 
 idw_without_pdf = make_list_without()
-idw_with_pdf = make_list_with()
-
-time_dict = {}
-for number, file in enumerate(idw_with_pdf["list"]):
-    time_dict[file] = round((names_dict[file + ".idw"]["File mod. time"] - names_dict[file + ".pdf"]["File mod. time"])/60)
-    print(number+1,": ", file, "| time is: ", time_dict[file])
+idw_with_pdf = make_dict_with()
+idw_without_dwg = make_list_without("idw", "dwg")
+idw_with_dwg = make_dict_with("idw", "dwg")
 
 input('')
