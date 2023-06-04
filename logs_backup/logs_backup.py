@@ -29,4 +29,4 @@ for log in logs:
         zip_file = zipfile.ZipFile(str(zip_file_path), 'w')
         zip_file.write(str(log[2]))
         
-input(f'Backup is done at {time_message}\nPress Enter to continue') 
+print(f'Backup is done at {time_message}') 
