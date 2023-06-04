@@ -16,6 +16,7 @@ month_string = datetime.date.today().strftime("%m")
 date_string = datetime.date.today().strftime("%d")
 cur_time = datetime.datetime.now().time()
 time_string = "{0:0>2}-{1:0>2}".format(str(cur_time.hour), str(cur_time.minute))
+time_message = "{0:0>2}:{1:0>2}".format(str(cur_time.hour), str(cur_time.minute))
 
 
 for log in logs:
@@ -27,3 +28,5 @@ for log in logs:
         zip_file_path = os.path.join(dir_path, time_string + '.zip')
         zip_file = zipfile.ZipFile(str(zip_file_path), 'w')
         zip_file.write(str(log[2]))
+        
+input(f'Backup is done at {time_message}\nPress Enter to continue') 
