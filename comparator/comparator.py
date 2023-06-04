@@ -20,8 +20,6 @@ def make_list_with (main_type = "idw", slave_type = "pdf"):
     
 
 cur_path = os.getcwd()
-# cur_path = "C:\\Users\\mrogozhyn\\Desktop\\test folder\\folder 1\\folder 1_1"
-cur_path = "F:\\05_Python\\For_my_work\\file_comparator"
 
 print("Curren directory:\n", cur_path,)
 
@@ -48,14 +46,11 @@ for key in extensions_dict:
             extensions_dict[key].append(names_dict[name]["File name"])
 
 idw_without_pdf = make_list_without()
-idw_without_dwg = make_list_without("idw", "dwg")
 idw_with_pdf = make_list_with()
-idw_with_dwg = make_list_with("idw", "dwg")
 
 time_dict = {}
-for file in idw_with_pdf["list"]:
+for number, file in enumerate(idw_with_pdf["list"]):
     time_dict[file] = round((names_dict[file + ".idw"]["File mod. time"] - names_dict[file + ".pdf"]["File mod. time"])/60)
-
-print (time_dict)
+    print(number+1,": ", file, "| time is: ", time_dict[file])
 
 input('')
