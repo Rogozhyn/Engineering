@@ -19,8 +19,9 @@ def make_list_with (main_type = "idw", slave_type = "pdf"):
     return {"main type" : main_type, "slave type" : slave_type, "operation" : "main with slave", "list" : main_with_slave_list}
     
 
-#cur_path = os.getcwd()
-cur_path = "C:\\Users\\mrogozhyn\\Desktop\\test folder\\folder 1\\folder 1_1"
+cur_path = os.getcwd()
+# cur_path = "C:\\Users\\mrogozhyn\\Desktop\\test folder\\folder 1\\folder 1_1"
+cur_path = "F:\\05_Python\\For_my_work\\file_comparator"
 
 print("Curren directory:\n", cur_path,)
 
@@ -35,16 +36,9 @@ for name in os.listdir(cur_path):
                             "File mod. time" : os.path.getmtime(os.path.join(cur_path, name))}
         file_types_set.add(os.path.splitext(os.path.join(cur_path, name))[1][1:])
 
-# Makes list of all extensions from set with all extensions
-file_types_list = sorted(list(file_types_set))
-print("\nThere are files with extensions:\n---------------------------------------")
-for number, type_ in enumerate(file_types_list):
-    print(number+1,": ", type_)
-print("---------------------------------------\n")
-
-# Makes new dictionary with all extensions
+# Makes new dictionary with all extensions from set with all extensions
 extensions_dict = {}
-for type_ in file_types_list:
+for type_ in file_types_set:
     extensions_dict[type_] = []
 
 # Adds file names to the list linked with the key
@@ -63,7 +57,5 @@ for file in idw_with_pdf["list"]:
     time_dict[file] = round((names_dict[file + ".idw"]["File mod. time"] - names_dict[file + ".pdf"]["File mod. time"])/60)
 
 print (time_dict)
-
-
 
 input('')
