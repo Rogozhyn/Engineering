@@ -79,14 +79,17 @@ list_to_do = (('idw', 'pdf'),
               ('ipt', 'idw'),
               ('xls', 'pdf'),
              )
-
+level = 1
+# 1 - if it is need only files from current folder
+# 2 - if it is need files from current folder and subfolders
 
 # Makes dictionary with all files information
-# names_dict.update(make_names_dict(cur_path))
-# for name in os.listdir(cur_path):
-#     if os.path.isdir(os.path.join(cur_path, name)):
-#         names_dict.update(make_names_dict(os.path.join(cur_path, name)))
-names_dict.update(make_names_dict(cur_path))        
+names_dict.update(make_names_dict(cur_path))
+if level == 2:
+    for name in os.listdir(cur_path):
+        if os.path.isdir(os.path.join(cur_path, name)):
+            names_dict.update(make_names_dict(os.path.join(cur_path, name)))
+
 
 # Makes new dictionary with all extensions from set with all extensions
 extensions_dict = {}
