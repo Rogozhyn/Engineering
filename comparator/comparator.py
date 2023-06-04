@@ -1,6 +1,19 @@
 import os
 from datetime import datetime
 
+def make_names_dict(files_path, types_set):
+    # Makes dictionary with all files information
+    names_dict_def = {}
+    for name in os.listdir(files_path):
+        if os.path.isfile(os.path.join(files_path, name)):
+            names_dict_def[name] = {"File name": os.path.splitext(name)[0],
+                                "File extension" : os.path.splitext(os.path.join(files_path, name))[1][1:],
+                                "File size" : os.path.getsize(os.path.join(files_path, name)),
+                                "File mod. time" : os.path.getmtime(os.path.join(files_path, name))}
+            types_set.add(os.path.splitext(os.path.join(files_path, name))[1][1:])
+    return names_dict_def
+
+
 def make_list_without(main_type = "idw", slave_type = "pdf"):
     # Makes list with main files, which have not pairs of slave files
     print("\n{0} files without {1} files:\n{2}".format(main_type, slave_type, separator), file = file)
@@ -23,6 +36,7 @@ def make_list_without(main_type = "idw", slave_type = "pdf"):
             print ("There are not {0} files".format(slave_type), file = file)
         print("\n", separator, "\n", file = file)
 
+
 def make_dict_with (main_type = "idw", slave_type = "pdf"):
     # Makes dictionary with main files, which have pairs of slave files
     print("\n{0} files with {1} files:\n{2}".format(main_type, slave_type, separator), file = file)
@@ -44,23 +58,23 @@ def make_dict_with (main_type = "idw", slave_type = "pdf"):
             print ("There are not {0} files".format(slave_type), file = file)
         print(separator, "\n", file = file)
 
+
 cur_path = os.getcwd()
 cur_date = datetime.now().date()
 cur_time = datetime.now().time()
 cur_date_time = str(cur_date) + "_" + "{:0>2}".format(str(cur_time.hour)) +"{:0>2}".format(str(cur_time.minute))
 file_name = "Result_" + cur_date_time + ".txt"
 separator = "-----------------------------------------\n"
-
-# Makes dictionary with all files information
 names_dict = {}
 file_types_set = set()
-for name in os.listdir(cur_path):
-    if os.path.isfile(os.path.join(cur_path, name)):
-        names_dict[name] = {"File name": os.path.splitext(name)[0],
-                            "File extension" : os.path.splitext(os.path.join(cur_path, name))[1][1:],
-                            "File size" : os.path.getsize(os.path.join(cur_path, name)),
-                            "File mod. time" : os.path.getmtime(os.path.join(cur_path, name))}
-        file_types_set.add(os.path.splitext(os.path.join(cur_path, name))[1][1:])
+
+names_dict.update(make_names_dict(cur_path, file_types_set))
+path_2 = "U:\\Users\\mrogozhyn\\Desktop\\ППП4.00.00.000_Inventor2021_2021-04-30\\Workspaces\\Рабочее пространство\\ППП4.01.00.000 - Колонна"
+names_dict.update(make_names_dict(path_2, file_types_set))
+path_3 = "U:\\Users\\mrogozhyn\\Desktop\\ППП4.00.00.000_Inventor2021_2021-04-30\\Workspaces\\Рабочее пространство\\ППП4.02.00.000 - Колонна"
+names_dict.update(make_names_dict(path_3, file_types_set))
+path_4 = "F:\\05_Python\\For_my_work\\file_comparator"
+names_dict.update(make_names_dict(path_4, file_types_set))
 
 # Makes new dictionary with all extensions from set with all extensions
 extensions_dict = {}
