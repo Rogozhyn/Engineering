@@ -1,16 +1,17 @@
 import os
 from datetime import datetime
 
-def make_names_dict(files_path, types_set):
+def make_names_dict(files_path):
     # Makes dictionary with all files information
     names_dict_def = {}
     for name in os.listdir(files_path):
         if os.path.isfile(os.path.join(files_path, name)):
             names_dict_def[name] = {"File name": os.path.splitext(name)[0],
-                                "File extension" : os.path.splitext(os.path.join(files_path, name))[1][1:],
-                                "File size" : os.path.getsize(os.path.join(files_path, name)),
-                                "File mod. time" : os.path.getmtime(os.path.join(files_path, name))}
-            types_set.add(os.path.splitext(os.path.join(files_path, name))[1][1:])
+                                    "File extension" : os.path.splitext(os.path.join(files_path, name))[1][1:],
+                                    "File size" : os.path.getsize(os.path.join(files_path, name)),
+                                    "File mod. time" : os.path.getmtime(os.path.join(files_path, name)),
+                                    "File path": os.path.basename(files_path)}
+            file_types_set.add(os.path.splitext(os.path.join(files_path, name))[1][1:])
     return names_dict_def
 
 
@@ -24,7 +25,7 @@ def make_list_without(main_type = "idw", slave_type = "pdf"):
         else:
             for number, name in enumerate(main_without_slave_list):
                 print("{0:>3} : {1}".format(number+1, name), file = file)
-            print("\n", separator, "\n", file = file)
+            print("\n{}\n".format(separator), file = file)
             return {"main type" : main_type,
                 "slave type" : slave_type,
                     "operation" : "main without slave",
@@ -34,7 +35,7 @@ def make_list_without(main_type = "idw", slave_type = "pdf"):
             print ("There are not {0} files".format(main_type), file = file)
         if slave_type not in extensions_dict:
             print ("There are not {0} files".format(slave_type), file = file)
-        print("\n", separator, "\n", file = file)
+        print("\n{}\n".format(separator), file = file)
 
 
 def make_dict_with (main_type = "idw", slave_type = "pdf"):
@@ -45,8 +46,14 @@ def make_dict_with (main_type = "idw", slave_type = "pdf"):
         for number, name in enumerate(sorted(list(set(extensions_dict[main_type]) & set(extensions_dict[slave_type])))):
             main_with_slave_dict[name] = round((names_dict[name + "." + main_type]["File mod. time"] - 
                                                 names_dict[name + "." + slave_type]["File mod. time"])/60)
-            print("{0:>3} : {1:<20} : {2:>5} minutes".format(number+1, name, main_with_slave_dict[name]), file = file)
-        print("\n", separator, "\n", file = file)
+            main_file_dir = names_dict[name + "." + main_type]["File path"]
+            slave_file_dir = names_dict[name + "." + slave_type]["File path"]
+            if main_file_dir == slave_file_dir:
+                dirs = ""
+            else:
+                dirs = ' : "{0}" - "{1}"'.format(main_file_dir, slave_file_dir)
+            print('{0:>3} : {1:<20} : {2:>5} minutes{3}'.format(number+1, name, main_with_slave_dict[name], dirs), file = file)
+        print("\n{}\n".format(separator), file = file)
         return {"main type" : main_type,
                 "slave type" : slave_type,
                 "operation" : "main with slave",
@@ -56,7 +63,7 @@ def make_dict_with (main_type = "idw", slave_type = "pdf"):
             print ("There are not {0} files".format(main_type), file = file)
         if slave_type not in extensions_dict:
             print ("There are not {0} files".format(slave_type), file = file)
-        print(separator, "\n", file = file)
+        print("\n{}\n".format(separator), file = file)
 
 
 cur_path = os.getcwd()
@@ -68,19 +75,18 @@ separator = "-----------------------------------------\n"
 names_dict = {}
 file_types_set = set()
 
-names_dict.update(make_names_dict(cur_path, file_types_set))
-path_2 = "U:\\Users\\mrogozhyn\\Desktop\\ППП4.00.00.000_Inventor2021_2021-04-30\\Workspaces\\Рабочее пространство\\ППП4.01.00.000 - Колонна"
-names_dict.update(make_names_dict(path_2, file_types_set))
-path_3 = "U:\\Users\\mrogozhyn\\Desktop\\ППП4.00.00.000_Inventor2021_2021-04-30\\Workspaces\\Рабочее пространство\\ППП4.02.00.000 - Колонна"
-names_dict.update(make_names_dict(path_3, file_types_set))
-path_4 = "F:\\05_Python\\For_my_work\\file_comparator"
-names_dict.update(make_names_dict(path_4, file_types_set))
+
+# Makes dictionary with all files information
+names_dict.update(make_names_dict(cur_path))
+for name in os.listdir(cur_path):
+    if os.path.isdir(os.path.join(cur_path, name)):
+        names_dict.update(make_names_dict(os.path.join(cur_path, name)))
+        
 
 # Makes new dictionary with all extensions from set with all extensions
 extensions_dict = {}
 for type_ in file_types_set:
     extensions_dict[type_] = []
-
 # Adds file names to the list linked with the key
 for key in extensions_dict:
     for name in names_dict:
@@ -96,6 +102,7 @@ idw_without_pdf = make_list_without()
 idw_with_pdf = make_dict_with()
 idw_without_dwg = make_list_without("idw", "dwg")
 idw_with_dwg = make_dict_with("idw", "dwg")
+
 
 file.close()
 
