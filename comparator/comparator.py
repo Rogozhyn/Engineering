@@ -21,7 +21,7 @@ def make_list_without(main_type, slave_type):
     print("\n{0} files without {1} files:\n{2}".format(main_type, slave_type, separator), file=file)
     if (main_type in extensions_dict) and (slave_type in extensions_dict):
         main_without_slave_list = sorted(list(set(extensions_dict[main_type]) - set(extensions_dict[slave_type])))
-        if main_without_slave_list == []:
+        if not main_without_slave_list:
             print("Each {0} file has {1} file\n\n{2}".format(main_type, slave_type, separator), file=file)
         else:
             for number, name in enumerate(main_without_slave_list):
@@ -84,7 +84,7 @@ list_to_do = (('idw', 'pdf'),
               )
 print('''
  1 - if it is need only files from current folder
- 2 - if it is need files from current folder and subfolders
+ 2 - if it is need files from current folder and sub-folders
  3 - if it is need to search files in folders 02_CAD and 05_PDF
  4 - if it is need to search files in folder 02_CAD and 09_Project kit
     ''')
@@ -130,7 +130,7 @@ for key in extensions_dict:
 file = open(file_name, "w")
 
 print("Date: {0}\nTime: {1:0>2}:{2:0>2}".format(str(cur_date), str(cur_time.hour), str(cur_time.minute)), file=file)
-print("Curren directory: {}\n".format(cur_path), file=file)
+print("Current directory: {}\n".format(cur_path), file=file)
 
 for task in list_to_do:
     make_list_without(task[0], task[1])
