@@ -27,21 +27,29 @@ class Gates:
         self.height = height
         self.sheet_thickness = sheet_thickness
         self.square = self.width * self.height
-        self.suitable_sheets = []
+        self.suitable_sheets_by_thickness = []
+        self.suitable_sheets_by_length = []
 
     def __str__(self):
         return f'Gates {self.width} mm x {self.height} mm, {self.square/1000000} m^2'
 
-    def choose_sheets(self, sheets_catalog):
+    def choose_sheets_by_thickness(self, sheets_catalog):
         for size in sheets_catalog.values():
             if size.get('thickness') == self.sheet_thickness:
-                self.suitable_sheets.append(size)
+                self.suitable_sheets_by_thickness.append((size.get('length'), size.get('width')))
+                if size.get('length') != size.get('width'):
+                    self.suitable_sheets_by_thickness.append((size.get('width'), size.get('length')))
 
-    def select_sheet(self):
+    def choose_sheets_by_length(self):
         print(f'Необхідна половина воріт розміром {self.half_width} x {self.height}')
-        for sheet in self.suitable_sheets:
-            if sheet.get('weight') >= self.half_width:
-                print(f"Можна використати лист {sheet} вертикально")
+        for sheet in self.suitable_sheets_by_thickness:
+            if sheet[0] >= self.half_width:
+                self.suitable_sheets_by_length.append(sheet)
+
+    def qty_sheets_by_square(self):
+        for sheet in self.suitable_sheets_by_length:
+            qty = self.square / (sheet[0] * sheet[1])
+            print(f'Мінімум необхідно {qty:.1f} листів {sheet[0]} x {sheet[1]}')
 
 
 
@@ -63,28 +71,30 @@ def create_gates_input():
 standard_sheets = {
     'size 1':
         {'length': 2500,
-         'weight': 1250,
+         'width': 1250,
          'thickness': 2
          },
     'size 2':
         {'length': 2000,
-         'weight': 1000,
+         'width': 1000,
          'thickness': 2
          },
 }
 
 sheets = []
 for sheet in standard_sheets.values():
-    sheets.append(create_sheet_mm(sheet.get('length'), sheet.get('weight'), sheet.get('thickness')))
+    sheets.append(create_sheet_mm(sheet.get('length'), sheet.get('width'), sheet.get('thickness')))
 
 for sheet in sheets:
     print(sheet)
 
-gates = create_gates_mm(1900, 3800, 2)
+gates = create_gates_mm(3000, 3800, 2)
 
 print(gates)
 
-gates.choose_sheets(standard_sheets)
+gates.choose_sheets_by_thickness(standard_sheets)
 
-print(gates.suitable_sheets)
-gates.select_sheet()
+print(gates.suitable_sheets_by_thickness)
+gates.choose_sheets_by_length()
+print(gates.suitable_sheets_by_length)
+gates.qty_sheets_by_square()
