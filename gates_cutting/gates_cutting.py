@@ -17,7 +17,7 @@ class SheetBlank:
 
     def __str__(self):
         return f'Sheet {self.length} mm x {self.width} mm x {self.thickness} mm,' \
-               f' {self.weight/1000000000:.1f} kg, {self.square/1000000:.3f} m^2'
+               f' {self.weight / 1000000000:.1f} kg, {self.square / 1000000:.3f} m^2'
 
 
 class Gates:
@@ -28,29 +28,23 @@ class Gates:
         self.sheet_thickness = sheet_thickness
         self.square = self.width * self.height
         self.suitable_sheets_by_thickness = []
-        self.suitable_sheets_by_length = []
 
     def __str__(self):
-        return f'Gates {self.width} mm x {self.height} mm, {self.square/1000000} m^2'
+        return f'Gates {self.width} mm x {self.height} mm, {self.square / 1000000} m^2'
 
     def choose_sheets_by_thickness(self, sheets_catalog):
         for size in sheets_catalog.values():
             if size.get('thickness') == self.sheet_thickness:
                 self.suitable_sheets_by_thickness.append((size.get('length'), size.get('width')))
-                if size.get('length') != size.get('width'):
-                    self.suitable_sheets_by_thickness.append((size.get('width'), size.get('length')))
-
-    def choose_sheets_by_length(self):
-        print(f'Необхідна половина воріт розміром {self.half_width} x {self.height}')
-        for sheet in self.suitable_sheets_by_thickness:
-            if sheet[0] >= self.half_width:
-                self.suitable_sheets_by_length.append(sheet)
 
     def qty_sheets_by_square(self):
-        for sheet in self.suitable_sheets_by_length:
-            qty = self.square / (sheet[0] * sheet[1])
-            print(f'Мінімум необхідно {qty:.1f} листів {sheet[0]} x {sheet[1]}')
-
+        for sheet in self.suitable_sheets_by_thickness:
+            sheet_square = sheet[0] * sheet[1]
+            qty_nominal = self.square / sheet_square
+            qty_real = 1 + self.square // sheet_square
+            lost = qty_real * sheet_square - self.square
+            print(f'Мінімум необхідно {qty_nominal:.1f} ({qty_real}) листів {sheet[0]} x {sheet[1]}')
+            print(f'Втрата {lost*0.000001:.1f} m^2')
 
 
 def create_sheet_mm(length, weight, thickness):
@@ -79,14 +73,22 @@ standard_sheets = {
          'width': 1000,
          'thickness': 2
          },
+    'size 3':
+        {'length': 1000,
+         'width': 1000,
+         'thickness': 2
+         },
+    'size 4':
+        {'length': 2000,
+         'width': 1000,
+         'thickness': 3
+         },
+    'size 5':
+        {'length': 2500,
+         'width': 1250,
+         'thickness': 3
+         },
 }
-
-sheets = []
-for sheet in standard_sheets.values():
-    sheets.append(create_sheet_mm(sheet.get('length'), sheet.get('width'), sheet.get('thickness')))
-
-for sheet in sheets:
-    print(sheet)
 
 gates = create_gates_mm(3000, 3800, 2)
 
@@ -95,6 +97,4 @@ print(gates)
 gates.choose_sheets_by_thickness(standard_sheets)
 
 print(gates.suitable_sheets_by_thickness)
-gates.choose_sheets_by_length()
-print(gates.suitable_sheets_by_length)
 gates.qty_sheets_by_square()
