@@ -2,6 +2,8 @@
 # You need to enter gate size and point size of the steel sheet blank.
 # After processing, you will receive most economical sheet cutting.
 
+from math import ceil
+
 DENSITY = 7850  # kg/m^3
 
 
@@ -17,7 +19,7 @@ class SheetBlank:
 
     def __str__(self):
         return f'Sheet {self.length} mm x {self.width} mm x {self.thickness} mm,' \
-               f' {self.weight / 1000000000:.1f} kg, {self.square / 1000000:.3f} m^2'
+               f' {self.weight / 1000000000:.1f} kg, {mm2_in_m2(self.square):.3f} m^2'
 
 
 class Gates:
@@ -30,28 +32,42 @@ class Gates:
         self.suitable_sheets_by_thickness = []
         self.sheets_variants = []
 
-
     def __str__(self):
-        return f'Gates {self.width} mm x {self.height} mm, {self.square / 1000000} m^2'
+        return f'Gates {self.width} mm x {self.height} mm, {mm2_in_m2(self.square)} m^2'
 
     def choose_sheets_by_thickness(self, sheets_catalog):
-        for size in sheets_catalog.values():
-            if size.get('thickness') == self.sheet_thickness:
-                self.suitable_sheets_by_thickness.append((size.get('length'), size.get('width')))
+        for sheet in sheets_catalog.values():
+            if sheet.get('thickness') == self.sheet_thickness:
+                self.suitable_sheets_by_thickness.append(
+                    (sheet.get('length'),
+                     sheet.get('width'),
+                     sheet.get('length') * sheet.get('width'))
+                )
+        print(f'Total sheet sizes: {len(self.suitable_sheets_by_thickness)}')
 
     def qty_sheets_by_square(self):
-        one_line = {'lost': None}
+        line_entry = {'lost': None}
+
         for sheet in self.suitable_sheets_by_thickness:
-            one_line.update({sheet: 0})
+            line_entry.update({sheet: 0})
+        max_qty_table = []
         for sheet in self.suitable_sheets_by_thickness:
-            sheet_square = sheet[0] * sheet[1]
-            qty_real = 1 + self.square // sheet_square
-            lost = qty_real * sheet_square - self.square
-            temp_data = one_line.copy()
-            temp_data['lost'] = lost
-            temp_data[sheet] = qty_real
-            self.sheets_variants.append(temp_data)
-        print(self.sheets_variants)
+            qty_real = ceil(self.square / sheet[2])
+            max_qty_table.append(qty_real)
+            lost = qty_real * sheet[2] - self.square
+            temp_line_entry = line_entry.copy()
+            temp_line_entry['lost'] = lost
+            temp_line_entry[sheet] = qty_real
+            self.sheets_variants.append(temp_line_entry)
+            print(temp_line_entry)
+
+
+def mm2_in_m2(square_mm2):
+    return square_mm2 / 1000000
+
+
+def m2_in_mm2(square_m2):
+    return square_m2 * 1000000
 
 
 def create_sheet_mm(length, weight, thickness):
@@ -103,5 +119,4 @@ print(gates)
 
 gates.choose_sheets_by_thickness(standard_sheets)
 
-print(gates.suitable_sheets_by_thickness)
 gates.qty_sheets_by_square()
