@@ -32,7 +32,8 @@
             }
 
             var cutPieces = getCutPieces(optimalLayout, gateWidth, gateHeight);
-            showResults(optimalLayout, cutPieces);
+            var pieceCounts = countCutPieces(cutPieces);
+            showResults(optimalLayout, cutPieces, pieceCounts);
         }
 
         function getLayout(gateWidth, gateHeight, sheetLength, sheetWidth) {
@@ -69,15 +70,33 @@
             return cutPieces;
         }
 
-        function showResults(layout, cutPieces) {
+        function countCutPieces(cutPieces) {
+            var pieceCounts = {};
+
+            for (var i = 0; i < cutPieces.length; i++) {
+                var piece = cutPieces[i];
+                var key = piece.width + "x" + piece.height;
+
+                if (pieceCounts[key]) {
+                    pieceCounts[key]++;
+                } else {
+                    pieceCounts[key] = 1;
+                }
+            }
+
+            return pieceCounts;
+        }
+
+        function showResults(layout, cutPieces, pieceCounts) {
             var resultText = "Кількість листів: " + layout.count + "\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n";
             resultText += layout.width + "\t" + layout.length + "\t" + layout.count;
 
             if (cutPieces.length > 0) {
-                resultText += "\n\nПорізані кусочки:\nШирина\tДовжина\n";
+                resultText += "\n\nПорізані кусочки:\nШирина\tДовжина\tКількість\n";
                 for (var i = 0; i < cutPieces.length; i++) {
                     var piece = cutPieces[i];
-                    resultText += piece.width + "\t" + piece.height + "\n";
+                    var key = piece.width + "x" + piece.height;
+                    resultText += piece.width + "\t" + piece.height + "\t" + pieceCounts[key] + "\n";
                 }
             }
 
