@@ -45,8 +45,8 @@ class Gates:
                 )
         print(f'Total sheet sizes: {len(self.suitable_sheets_by_thickness)}')
 
-    def qty_sheets_by_area(self):
-        line_entry = {'lost': None}
+    def calc_qty_sheets_by_area(self):
+        line_entry = {'waste': None}
         for sheet in self.suitable_sheets_by_thickness:
             line_entry.update({sheet: 0})
 
@@ -58,12 +58,16 @@ class Gates:
                 kit_area += sheets_qty[i] * self.suitable_sheets_by_thickness[i][2]
 
             required_area = self.area - kit_area
+            if required_area < 0:
+                required_area = 0
 
             sheets_qty[-1] = ceil(required_area / self.suitable_sheets_by_thickness[-1][2])
             kit_area += sheets_qty[-1] * self.suitable_sheets_by_thickness[-1][2]
 
             temp_line_entry = line_entry.copy()
-            temp_line_entry['lost'] = kit_area - self.area
+            temp_line_entry['waste'] = kit_area - self.area
+            if temp_line_entry['waste'] > self.area:
+                break
             for i in range(len(self.suitable_sheets_by_thickness)):
                 temp_line_entry[self.suitable_sheets_by_thickness[i]] = sheets_qty[i]
 
@@ -78,6 +82,9 @@ class Gates:
                 sheets_qty[-2] = 0
                 sheets_qty[-3] += 1
 
+            if sheets_qty[-1] < 0:
+                break
+
 
 def mm2_in_m2(area_mm2):
     return area_mm2 / 1000000
@@ -85,10 +92,6 @@ def mm2_in_m2(area_mm2):
 
 def m2_in_mm2(area_m2):
     return area_m2 * 1000000
-
-
-def create_sheet_mm(length, weight, thickness):
-    return SheetBlank(length, weight, thickness)
 
 
 def create_gates_mm(width, height, sheet_thickness):
@@ -102,7 +105,7 @@ def create_gates_input():
     return Gates(width, height, sheet_thickness)
 
 
-standard_sheets = {
+standard_sizes = {
     'size 1':
         {'length': 2500,
          'width': 1250,
@@ -128,12 +131,17 @@ standard_sheets = {
          'width': 1250,
          'thickness': 3
          },
+    'size 6':
+        {'length': 1000,
+         'width': 500,
+         'thickness': 2
+         },
 }
 
 gates = create_gates_mm(3000, 3800, 2)
 
 print(gates)
 
-gates.choose_sheets_by_thickness(standard_sheets)
+gates.choose_sheets_by_thickness(standard_sizes)
 
-gates.qty_sheets_by_area()
+gates.calc_qty_sheets_by_area()
