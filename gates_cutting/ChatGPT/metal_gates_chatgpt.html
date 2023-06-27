@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Розрахунок розміщення листів металу</title>
+    <title>Розрахунок розміщення листів металу та порізка кусочків</title>
     <script>
         function calculateOptimalCuts() {
             var gateWidth = parseInt(document.getElementById("width").value);
@@ -31,7 +31,8 @@
                 }
             }
 
-            showResults(optimalLayout);
+            var cutPieces = getCutPieces(optimalLayout, gateWidth, gateHeight);
+            showResults(optimalLayout, cutPieces);
         }
 
         function getLayout(gateWidth, gateHeight, sheetLength, sheetWidth) {
@@ -50,15 +51,42 @@
             return sheetLayout;
         }
 
-        function showResults(layout) {
+        function getCutPieces(layout, gateWidth, gateHeight) {
+            var cutPieces = [];
+
+            var pieceWidth = gateWidth % layout.width;
+            if (pieceWidth > 0) {
+                var pieceHeight = layout.length;
+                cutPieces.push({ width: pieceWidth, height: pieceHeight });
+            }
+
+            var pieceHeight = gateHeight % layout.length;
+            if (pieceHeight > 0) {
+                var pieceWidth = layout.width;
+                cutPieces.push({ width: pieceWidth, height: pieceHeight });
+            }
+
+            return cutPieces;
+        }
+
+        function showResults(layout, cutPieces) {
             var resultText = "Кількість листів: " + layout.count + "\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n";
             resultText += layout.width + "\t" + layout.length + "\t" + layout.count;
+
+            if (cutPieces.length > 0) {
+                resultText += "\n\nПорізані кусочки:\nШирина\tДовжина\n";
+                for (var i = 0; i < cutPieces.length; i++) {
+                    var piece = cutPieces[i];
+                    resultText += piece.width + "\t" + piece.height + "\n";
+                }
+            }
+
             document.getElementById("results").textContent = resultText;
         }
     </script>
 </head>
 <body>
-    <h1>Розрахунок розміщення листів металу</h1>
+    <h1>Розрахунок розміщення листів металу та порізка кусочків</h1>
     <label for="width">Ширина воріт (мм):</label>
     <input type="text" id="width" name="width"><br>
 

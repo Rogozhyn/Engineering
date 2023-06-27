@@ -1,4 +1,6 @@
 import math
+import tkinter as tk
+from tkinter import messagebox
 
 # Стандартні розміри листів металу
 standard_sizes = [
@@ -7,22 +9,28 @@ standard_sizes = [
     # Додайте інші стандартні розміри, якщо потрібно
 ]
 
-def calculate_optimal_cuts(gate_width, gate_height):
-    total_area = gate_width * gate_height
-    optimal_layout = None
-    min_waste = float('inf')
+def calculate_optimal_cuts():
+    try:
+        gate_width = int(width_entry.get())
+        gate_height = int(height_entry.get())
 
-    # Проходимося по всім комбінаціям стандартних розмірів
-    for size in standard_sizes:
-        layout = get_layout(gate_width, gate_height, size['length'], size['width'])
-        waste = size['length'] * size['width'] * layout['unused']
+        total_area = gate_width * gate_height
+        optimal_layout = None
+        min_waste = float('inf')
 
-        # Знаходимо найменшу кількість відходів
-        if waste < min_waste:
-            min_waste = waste
-            optimal_layout = layout
+        # Проходимося по всім комбінаціям стандартних розмірів
+        for size in standard_sizes:
+            layout = get_layout(gate_width, gate_height, size['length'], size['width'])
+            waste = size['length'] * size['width'] * layout['unused']
 
-    return optimal_layout
+            # Знаходимо найменшу кількість відходів
+            if waste < min_waste:
+                min_waste = waste
+                optimal_layout = layout
+
+        show_results(optimal_layout)
+    except ValueError:
+        messagebox.showerror("Помилка", "Будь ласка, введіть числові значення для ширини та висоти.")
 
 def get_layout(gate_width, gate_height, sheet_length, sheet_width):
     # Розміри воріт
@@ -39,17 +47,34 @@ def get_layout(gate_width, gate_height, sheet_length, sheet_width):
 
     return sheet_layout
 
-# Вхідні дані від користувача
-gate_width = int(input("Введіть ширину воріт: "))
-gate_height = int(input("Введіть висоту воріт: "))
+def show_results(layout):
+    result_text = f"Кількість листів: {layout['count']}\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n"
+    result_text += f"{layout['width']}\t{layout['length']}\t{layout['count']}"
+    result_label.configure(text=result_text)
 
-# Розрахунок оптимального розміщення
-optimal_layout = calculate_optimal_cuts(gate_width, gate_height)
+# Створення головного вікна
+window = tk.Tk()
+window.title("Розрахунок розміщення листів металу")
 
-# Виведення результатів
-print("Кількість листів: ", optimal_layout['count'])
-print("Розміщення на листах:")
-print("Ширина\tДовжина\tКількість")
-print(optimal_layout['width'], "\t", optimal_layout['length'], "\t", optimal_layout['count'])
+# Елементи управління
+width_label = tk.Label(window, text="Ширина воріт (мм):")
+width_label.pack()
+width_entry = tk.Entry(window)
+width_entry.pack()
 
-input()
+height_label = tk.Label(window, text="Висота воріт (мм):")
+height_label.pack()
+height_entry = tk.Entry(window)
+height_entry.pack()
+
+calculate_button = tk.Button(window, text="Розрахувати", command=calculate_optimal_cuts)
+calculate_button.pack()
+
+result_label = tk.Label(window, text="")
+result_label.pack()
+
+# Запуск головного циклу програми
+window.mainloop()
+
+
+# pip install tk
