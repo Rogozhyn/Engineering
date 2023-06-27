@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Розрахунок розміщення листів металу</title>
+    <script>
+        function calculateOptimalCuts() {
+            var gateWidth = parseInt(document.getElementById("width").value);
+            var gateHeight = parseInt(document.getElementById("height").value);
+
+            // Стандартні розміри листів металу
+            var standardSizes = [
+                { length: 2500, width: 1250 },
+                { length: 2000, width: 1000 }
+                // Додайте інші стандартні розміри, якщо потрібно
+            ];
+
+            var totalArea = gateWidth * gateHeight;
+            var optimalLayout = null;
+            var minWaste = Infinity;
+
+            // Проходимося по всім комбінаціям стандартних розмірів
+            for (var i = 0; i < standardSizes.length; i++) {
+                var size = standardSizes[i];
+                var layout = getLayout(gateWidth, gateHeight, size.length, size.width);
+                var waste = size.length * size.width * layout.unused;
+
+                // Знаходимо найменшу кількість відходів
+                if (waste < minWaste) {
+                    minWaste = waste;
+                    optimalLayout = layout;
+                }
+            }
+
+            showResults(optimalLayout);
+        }
+
+        function getLayout(gateWidth, gateHeight, sheetLength, sheetWidth) {
+            // Розміри воріт
+            var widthCuts = Math.ceil(gateWidth / sheetWidth);
+            var heightCuts = Math.ceil(gateHeight / sheetLength);
+
+            // Розміщення на аркуші
+            var sheetLayout = {
+                width: sheetWidth,
+                length: sheetLength,
+                count: widthCuts * heightCuts,
+                unused: (widthCuts * sheetWidth * heightCuts * sheetLength - gateWidth * gateHeight) / (sheetWidth * sheetLength)
+            };
+
+            return sheetLayout;
+        }
+
+        function showResults(layout) {
+            var resultText = "Кількість листів: " + layout.count + "\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n";
+            resultText += layout.width + "\t" + layout.length + "\t" + layout.count;
+            document.getElementById("results").textContent = resultText;
+        }
+    </script>
+</head>
+<body>
+    <h1>Розрахунок розміщення листів металу</h1>
+    <label for="width">Ширина воріт (мм):</label>
+    <input type="text" id="width" name="width"><br>
+
+    <label for="height">Висота воріт (мм):</label>
+    <input type="text" id="height" name="height"><br>
+
+    <button onclick="calculateOptimalCuts()">Розрахувати</button>
+
+    <h2>Результати:</h2>
+    <pre id="results"></pre>
+</body>
+</html>
