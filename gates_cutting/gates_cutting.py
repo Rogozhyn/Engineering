@@ -4,8 +4,6 @@
 
 from math import ceil
 
-DENSITY = 7850  # kg/m^3
-
 
 class SheetBlank:
     def __init__(self, length, width, thickness):
@@ -14,12 +12,9 @@ class SheetBlank:
         self.thickness = thickness  # mm
         self.init_area = length * width  # mm^2
         self.area = self.init_area  # mm^2
-        self.init_weight = self.init_area * thickness * DENSITY
-        self.weight = self.init_weight
 
     def __str__(self):
-        return f'Sheet {self.length} mm x {self.width} mm x {self.thickness} mm,' \
-               f' {self.weight / 1000000000:.1f} kg, {mm2_in_m2(self.area):.3f} m^2'
+        return f'Sheet {self.length} mm x {self.width} mm x {self.thickness} mm, {mm2_in_m2(self.area):.3f} m^2'
 
 
 class Gates:
@@ -33,7 +28,7 @@ class Gates:
         self.sheets_variants = []
 
     def __str__(self):
-        return f'Gates {self.width} mm x {self.height} mm, {mm2_in_m2(self.area)} m^2'
+        return f'Gates {self.width} mm x {self.height} mm, {mm2_in_m2(self.area):.1f} m^2'
 
     def choose_sheets_by_thickness(self, sheets_catalog):
         for sheet in sheets_catalog.values():
@@ -58,6 +53,7 @@ class Gates:
         sheets_qty = [0] * len(self.suitable_sheets_by_thickness)
 
         # Проходимо циклом while варіант з кількістю листів в списку sheets_qty
+        sheets_variants = []
         alive = True
         while alive:
             # Обнуляємо площу перед наступними розрахунками
@@ -85,13 +81,13 @@ class Gates:
             # Повністю копіюємо шаблон рядка для запису данних в таблицю розрахованних варіантів
             temp_line_entry = line_entry.copy()
             # Формуємо рядок з розрахованними данними для його подальшого додавання в список варіантів
-            temp_line_entry['waste'] = waste_area
+            temp_line_entry['waste'] = round(mm2_in_m2(waste_area), 1)
             for i in range(len(self.suitable_sheets_by_thickness)):
                 temp_line_entry[self.suitable_sheets_by_thickness[i]] = sheets_qty[i]
             # Додаємо сформованний рядок в список розрахованних варіантів
-            self.sheets_variants.append(temp_line_entry)
+            sheets_variants.append(temp_line_entry)
             # print(temp_line_entry)
-            print(sheets_qty)
+            # print(sheets_qty)
 
             # Якщо в списку підходящих типорозмірів всього один типорозмір, то подальший розрахунок не ведеться.
             # Якщо кількість листів всіх типорозмірів після першого дорівнює нулю, то це означає, що ми дійшли
@@ -99,14 +95,23 @@ class Gates:
             if len(self.suitable_sheets_by_thickness) == 1 or sum(sheets_qty[1:]) == 0:
                 alive = False
             else:
-                for item_number in range(len(sheets_qty)-1):
+                for item_number in range(len(sheets_qty) - 1):
                     pass
 
-                sheets_qty[-2] += 1
-                if sheets_qty[-1] == 0:
+                if sheets_qty[-1] + sheets_qty[-2] == 0:
+                    sheets_qty[-3] = 0
+                    sheets_qty[-4] += 1
+                elif sheets_qty[-1] == 0:
                     sheets_qty[-2] = 0
-
                     sheets_qty[-3] += 1
+                else:
+                    sheets_qty[-2] += 1
+
+        # sheets_variants.sort(key=itemgetter('waste'))
+        sheets_variants.sort(key=lambda sheets: sheets['waste'])
+        for item in sheets_variants:
+            if item['waste'] == sheets_variants[0]['waste']:
+                print(item)
 
 
 def mm2_in_m2(area_mm2):
@@ -166,7 +171,7 @@ standard_sizes = {
          },
 }
 
-gates = create_gates_mm(3000, 3800, 2)
+gates = create_gates_mm(3255, 4355, 2)
 
 print(gates)
 
