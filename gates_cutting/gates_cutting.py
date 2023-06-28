@@ -46,44 +46,67 @@ class Gates:
         print(f'Total sheet sizes: {len(self.suitable_sheets_by_thickness)}')
 
     def calc_qty_sheets_by_area(self):
+        if len(self.suitable_sheets_by_thickness) == 0:
+            return
+        # Формуєму шаблон рядка для запису данних в список можливих варіантів
+        # Для кожного типорозміру листа вказуємо кількість таких листів 0 одиниць
         line_entry = {'waste': None}
         for sheet in self.suitable_sheets_by_thickness:
             line_entry.update({sheet: 0})
 
+        # Формуємо список в якому будемо записувати кількість листів для поточного прогону цикла while
         sheets_qty = [0] * len(self.suitable_sheets_by_thickness)
 
-        while True:
+        # Проходимо циклом while варіант з кількістю листів в списку sheets_qty
+        alive = True
+        while alive:
+            # Обнуляємо площу перед наступними розрахунками
             kit_area = 0
+
+            # Розраховуємо площу всіх листів в списку підходящих типорозмірів листів, крім останнього.
+            # Кількість листів останнього типорозміру будемо розраховувати окремо
             for i in range(len(self.suitable_sheets_by_thickness) - 1):
                 kit_area += sheets_qty[i] * self.suitable_sheets_by_thickness[i][2]
 
+            # Розраховуваємо яку площу повинні мати листи останнього типорозміру
             required_area = self.area - kit_area
-            if required_area < 0:
-                required_area = 0
-
-            sheets_qty[-1] = ceil(required_area / self.suitable_sheets_by_thickness[-1][2])
+            # Якщо вийде, що та площа, що мають листи крім останнього типорозміру вже більша, ніж площа воріт
+            # то тоді кількість листів останнього типорозміру буде дорівнюватися нулю
+            if required_area > 0:
+                sheets_qty[-1] = ceil(required_area / self.suitable_sheets_by_thickness[-1][2])
+            else:
+                sheets_qty[-1] = 0
             kit_area += sheets_qty[-1] * self.suitable_sheets_by_thickness[-1][2]
 
+            waste_area = kit_area - self.area
+            # Якщо площа, що буде втрачена більша за площу самих воріт, то розрахунок закінчується
+            if waste_area > self.area:
+                alive = False
+            # Повністю копіюємо шаблон рядка для запису данних в таблицю розрахованних варіантів
             temp_line_entry = line_entry.copy()
-            temp_line_entry['waste'] = kit_area - self.area
-            if temp_line_entry['waste'] > self.area:
-                break
+            # Формуємо рядок з розрахованними данними для його подальшого додавання в список варіантів
+            temp_line_entry['waste'] = waste_area
             for i in range(len(self.suitable_sheets_by_thickness)):
                 temp_line_entry[self.suitable_sheets_by_thickness[i]] = sheets_qty[i]
-
+            # Додаємо сформованний рядок в список розрахованних варіантів
             self.sheets_variants.append(temp_line_entry)
-            print(temp_line_entry)
+            # print(temp_line_entry)
+            print(sheets_qty)
 
-            if sum(sheets_qty[1:]) == 0:
-                break
+            # Якщо в списку підходящих типорозмірів всього один типорозмір, то подальший розрахунок не ведеться.
+            # Якщо кількість листів всіх типорозмірів після першого дорівнює нулю, то це означає, що ми дійшли
+            # до максимальної кількості листів першого типорозміру і подальші розрахунки не потрібні
+            if len(self.suitable_sheets_by_thickness) == 1 or sum(sheets_qty[1:]) == 0:
+                alive = False
+            else:
+                for item_number in range(len(sheets_qty)-1):
+                    pass
 
-            sheets_qty[-2] += 1
-            if sheets_qty[-1] == 0:
-                sheets_qty[-2] = 0
-                sheets_qty[-3] += 1
+                sheets_qty[-2] += 1
+                if sheets_qty[-1] == 0:
+                    sheets_qty[-2] = 0
 
-            if sheets_qty[-1] < 0:
-                break
+                    sheets_qty[-3] += 1
 
 
 def mm2_in_m2(area_mm2):
@@ -135,6 +158,11 @@ standard_sizes = {
         {'length': 1000,
          'width': 500,
          'thickness': 2
+         },
+    'size 7':
+        {'length': 2500,
+         'width': 1250,
+         'thickness': 4
          },
 }
 
