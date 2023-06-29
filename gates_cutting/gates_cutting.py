@@ -28,7 +28,7 @@ class Gates:
         self.sheets_variants = []
 
     def __str__(self):
-        return f'Gates {self.width} mm x {self.height} mm, {mm2_in_m2(self.area):.1f} m^2'
+        return f'Ворота: {self.width} мм x {self.height} мм. Площа поверхні: {mm2_in_m2(self.area):.1f} м^2'
 
     def choose_sheets_by_thickness(self, sheets_catalog):
         for sheet in sheets_catalog.values():
@@ -38,10 +38,15 @@ class Gates:
                      sheet.get('width'),
                      sheet.get('length') * sheet.get('width'))
                 )
-        print(f'Total sheet sizes: {len(self.suitable_sheets_by_thickness)}')
+        self.suitable_sheets_by_thickness.sort(key=lambda sheet: sheet[2], reverse=True)
+        print(f'Всього підходящих типорозмірів: {len(self.suitable_sheets_by_thickness)}')
+        for item in self.suitable_sheets_by_thickness:
+            print(f'Лист {item[0]} x {item[1]} x {self.sheet_thickness}')
 
     def calc_qty_sheets_by_area(self):
+        # Якщо в списку підходящих листів нема жодного листа, то функція далі не виконується
         if len(self.suitable_sheets_by_thickness) == 0:
+            print('Немає підходящих листів')
             return
         # Формуєму шаблон рядка для запису данних в список можливих варіантів
         # Для кожного типорозміру листа вказуємо кількість таких листів 0 одиниць
@@ -53,6 +58,7 @@ class Gates:
         sheets_qty = [0] * len(self.suitable_sheets_by_thickness)
 
         # Проходимо циклом while варіант з кількістю листів в списку sheets_qty
+        # и записуємо результати в список sheets_variants
         sheets_variants = []
         alive = True
         while alive:
@@ -74,6 +80,7 @@ class Gates:
                 sheets_qty[-1] = 0
             kit_area += sheets_qty[-1] * self.suitable_sheets_by_thickness[-1][2]
 
+            # Розраховуємо площу втраченого матеріалу
             waste_area = kit_area - self.area
             # Якщо площа, що буде втрачена більша за площу самих воріт, то розрахунок закінчується
             if waste_area > self.area:
@@ -92,26 +99,29 @@ class Gates:
             # Якщо в списку підходящих типорозмірів всього один типорозмір, то подальший розрахунок не ведеться.
             # Якщо кількість листів всіх типорозмірів після першого дорівнює нулю, то це означає, що ми дійшли
             # до максимальної кількості листів першого типорозміру і подальші розрахунки не потрібні
+            plus_one = False
             if len(self.suitable_sheets_by_thickness) == 1 or sum(sheets_qty[1:]) == 0:
                 alive = False
+            elif len(self.suitable_sheets_by_thickness) > 2:
+                for item in range(len(sheets_qty) - 2):
+                    # print(f'Item = {item}, sum = {sum(sheets_qty[item + 2:])}')
+                    if sum(sheets_qty[item + 2:]) == 0:
+                        sheets_qty[item + 1] = 0
+                        sheets_qty[item] += 1
+                        plus_one = False
+                        break
+                    else:
+                        plus_one = True
             else:
-                for item_number in range(len(sheets_qty) - 1):
-                    pass
+                plus_one = True
 
-                if sheets_qty[-1] + sheets_qty[-2] == 0:
-                    sheets_qty[-3] = 0
-                    sheets_qty[-4] += 1
-                elif sheets_qty[-1] == 0:
-                    sheets_qty[-2] = 0
-                    sheets_qty[-3] += 1
-                else:
-                    sheets_qty[-2] += 1
+            if plus_one:
+                sheets_qty[-2] += 1
 
-        # sheets_variants.sort(key=itemgetter('waste'))
         sheets_variants.sort(key=lambda sheets: sheets['waste'])
         for item in sheets_variants:
-            if item['waste'] == sheets_variants[0]['waste']:
-                print(item)
+            print(item)
+        self.sheets_variants = sheets_variants
 
 
 def mm2_in_m2(area_mm2):
@@ -142,7 +152,7 @@ standard_sizes = {
     'size 2':
         {'length': 1000,
          'width': 1000,
-         'thickness': 2
+         'thickness': 5
          },
     'size 3':
         {'length': 2000,
@@ -162,12 +172,17 @@ standard_sizes = {
     'size 6':
         {'length': 1000,
          'width': 500,
-         'thickness': 2
+         'thickness': 5
          },
     'size 7':
         {'length': 2500,
          'width': 1250,
          'thickness': 4
+         },
+    'size 8':
+        {'length': 3000,
+         'width': 1500,
+         'thickness': 2
          },
 }
 
