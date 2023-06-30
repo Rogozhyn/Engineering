@@ -48,11 +48,6 @@ class Gates:
         if len(self.suitable_sheets_by_thickness) == 0:
             print('Немає підходящих листів')
             return
-        # Формуєму шаблон рядка для запису данних в список можливих варіантів
-        # Для кожного типорозміру листа вказуємо кількість таких листів 0 одиниць
-        line_entry = {'waste': None}
-        for sheet in self.suitable_sheets_by_thickness:
-            line_entry.update({sheet: 0})
 
         # Формуємо список в якому будемо записувати кількість листів для поточного прогону цикла while
         sheets_qty = [0] * len(self.suitable_sheets_by_thickness)
@@ -64,7 +59,8 @@ class Gates:
         while alive:
             # Обнуляємо площу перед наступними розрахунками
             kit_area = 0
-
+            # Створюєємо пустий словник для запису данних в таблицю розрахованних варіантів
+            temp_line_entry = dict()
             # Розраховуємо площу всіх листів в списку підходящих типорозмірів листів, крім останнього.
             # Кількість листів останнього типорозміру будемо розраховувати окремо
             for i in range(len(self.suitable_sheets_by_thickness) - 1):
@@ -85,8 +81,7 @@ class Gates:
             # Якщо площа, що буде втрачена більша за площу самих воріт, то розрахунок закінчується
             if waste_area > self.area:
                 alive = False
-            # Повністю копіюємо шаблон рядка для запису данних в таблицю розрахованних варіантів
-            temp_line_entry = line_entry.copy()
+
             # Формуємо рядок з розрахованними данними для його подальшого додавання в список варіантів
             temp_line_entry['waste'] = round(mm2_in_m2(waste_area), 1)
             for i in range(len(self.suitable_sheets_by_thickness)):
@@ -182,11 +177,11 @@ standard_sizes = {
     'size 8':
         {'length': 3000,
          'width': 1500,
-         'thickness': 2
+         'thickness': 3
          },
 }
 
-gates = create_gates_mm(3255, 4355, 2)
+gates = create_gates_mm(3310, 3660, 2)
 
 print(gates)
 
