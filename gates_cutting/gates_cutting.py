@@ -59,7 +59,7 @@ class Gates:
             # Обнуляємо площу перед наступними розрахунками
             kit_area = 0
             # Створюєємо пустий словник для запису данних в таблицю розрахованних варіантів
-            temp_line_entry = dict()
+            temp_line_entry = {'waste': None, 'sheets': dict()}
             # Розраховуємо площу всіх листів в списку підходящих типорозмірів листів, крім останнього.
             # Кількість листів останнього типорозміру будемо розраховувати окремо
             for i in range(len(self.suitable_sheets_by_thickness) - 1):
@@ -85,7 +85,7 @@ class Gates:
             # Формуємо рядок з розрахованними данними для його подальшого додавання в список варіантів
             temp_line_entry['waste'] = round(waste_area_percentage, 1)
             for i in range(len(self.suitable_sheets_by_thickness)):
-                temp_line_entry[self.suitable_sheets_by_thickness[i]] = sheets_qty[i]
+                temp_line_entry['sheets'][self.suitable_sheets_by_thickness[i]] = sheets_qty[i]
             # Додаємо сформованний рядок в список розрахованних варіантів
             sheets_variants.append(temp_line_entry)
 
@@ -115,7 +115,9 @@ class Gates:
         self.sheets_variants = sheets_variants
 
     def calc_pieces_of_sheets(self, variant):
-        active_variant = self.sheets_variants[variant-1]
+        active_variant = dict()
+        for item, qty in self.sheets_variants[variant-1]['sheets'].items():
+            print(item, qty)
         print(active_variant)
 
     def print_suitable_sheets(self):
@@ -131,9 +133,9 @@ class Gates:
             print('Можливі наступні комбінації листів:')
             for count, value in enumerate(self.sheets_variants, start=1):
                 print(f'{count}) Втрати {value["waste"]} %,')
-                for item in list(value.items())[1:]:
-                    if item[1] != 0:
-                        print(f'\t{item[0][0]} x {item[0][1]} - {item[1]} од.')
+                for sheet, qty in value['sheets'].items():
+                    if qty != 0:
+                        print(f'\t{sheet[0]} x {sheet[1]} - {qty} од.')
         elif not self.suitable_sheets_by_thickness:
             print('Список підходящих типорозмірів листів пустий. Завантажте список типорозмірів листів.')
         else:
