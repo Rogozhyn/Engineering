@@ -5,7 +5,7 @@
 from math import ceil
 
 
-class SheetBlank:
+class Sheet:
     def __init__(self, length, width, thickness):
         self.length = length  # mm
         self.width = width  # mm
@@ -14,7 +14,7 @@ class SheetBlank:
         self.area = self.init_area  # mm^2
 
     def __str__(self):
-        return f'Sheet {self.length} mm x {self.width} mm x {self.thickness} mm, {mm2_in_m2(self.area):.3f} m^2'
+        return f'Лист {self.length} мм x {self.width} мм x {self.thickness} мм, {mm2_in_m2(self.area):.3f} m^2'
 
 
 class Gates:
@@ -26,6 +26,7 @@ class Gates:
         self.area = self.width * self.height
         self.suitable_sheets_by_thickness = []
         self.sheets_variants = []
+        self.pieces_variant = []
 
     def __str__(self):
         return f'Габарити воріт: {self.width} мм x {self.height} мм | ' \
@@ -38,9 +39,10 @@ class Gates:
                 self.suitable_sheets_by_thickness.append(
                     (sheet.get('length'),
                      sheet.get('width'),
+                     sheet.get('thickness'),
                      sheet.get('length') * sheet.get('width'))
                 )
-        self.suitable_sheets_by_thickness.sort(key=lambda sheet: sheet[2], reverse=True)
+        self.suitable_sheets_by_thickness.sort(key=lambda sheet: sheet[3], reverse=True)
 
     def calc_qty_sheets_by_area(self):
         # Якщо в списку підходящих листів нема жодного листа, то функція далі не виконується
@@ -63,17 +65,17 @@ class Gates:
             # Розраховуємо площу всіх листів в списку підходящих типорозмірів листів, крім останнього.
             # Кількість листів останнього типорозміру будемо розраховувати окремо
             for i in range(len(self.suitable_sheets_by_thickness) - 1):
-                kit_area += sheets_qty[i] * self.suitable_sheets_by_thickness[i][2]
+                kit_area += sheets_qty[i] * self.suitable_sheets_by_thickness[i][3]
 
             # Розраховуваємо яку площу повинні мати листи останнього типорозміру
             required_area = self.area - kit_area
             # Якщо вийде, що та площа, що мають листи крім останнього типорозміру вже більша, ніж площа воріт
             # то тоді кількість листів останнього типорозміру буде дорівнюватися нулю
             if required_area > 0:
-                sheets_qty[-1] = ceil(required_area / self.suitable_sheets_by_thickness[-1][2])
+                sheets_qty[-1] = ceil(required_area / self.suitable_sheets_by_thickness[-1][3])
             else:
                 sheets_qty[-1] = 0
-            kit_area += sheets_qty[-1] * self.suitable_sheets_by_thickness[-1][2]
+            kit_area += sheets_qty[-1] * self.suitable_sheets_by_thickness[-1][3]
 
             # Розраховуємо площу втраченого матеріалу
             waste_area = kit_area - self.area
@@ -115,10 +117,24 @@ class Gates:
         self.sheets_variants = sheets_variants
 
     def calc_pieces_of_sheets(self, variant):
-        active_variant = dict()
+        # Створення цієї функції поки що дуже складне для мого рівня. Тому подальша розробка програми заморожена.
+        # Створюємо екземпляри листів згідно з варіантом розрахунку кількості листів
         for item, qty in self.sheets_variants[variant-1]['sheets'].items():
-            print(item, qty)
-        print(active_variant)
+            if qty == 0:
+                pass
+            elif qty % 2 == 0:
+                for number in range(int(qty/2)):
+                    self.pieces_variant.append(Sheet(item[0], item[1], item[2]))
+            elif qty > 2:
+                for number in range(int(qty/2)):
+                    self.pieces_variant.append(Sheet(item[0], item[1], item[2]))
+            else:
+                pass
+
+        for item in self.pieces_variant:
+            print(item)
+
+
 
     def print_suitable_sheets(self):
         if self.suitable_sheets_by_thickness:
