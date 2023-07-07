@@ -1,92 +1,62 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Розрахунок розміщення листів металу та порізка кусочків</title>
+        <title>Підбір листів</title>
         <script>
-            function calculateOptimalCuts() {
+            function calculateQtySheetsByArea() {
+                // Парсимо данні з інпутів в body
                 var gateWidth = parseInt(document.getElementById("width").value);
                 var gateHeight = parseInt(document.getElementById("height").value);
-    
+                var totalArea = gateWidth * gateHeight;
+
                 // Стандартні розміри листів металу
                 var standardSizes = [
-                    { length: 2500, width: 1250 },
-                    { length: 2000, width: 1000 }
+                    { length: 2500, width: 1250, area: 2500*1250, size: '2500x1250' },
+                    { length: 2000, width: 1000, area: 2000*1000, size: '2000x1000' }
                     // Додайте інші стандартні розміри, якщо потрібно
                 ];
-    
-                var totalArea = gateWidth * gateHeight;
-                var optimalLayout = null;
-                var minWaste = Infinity;
-    
-                // Проходимося по всім комбінаціям стандартних розмірів
-                for (var i = 0; i < standardSizes.length; i++) {
-                    var size = standardSizes[i];
-                    var layout = getLayout(gateWidth, gateHeight, size.length, size.width);
-                    var waste = size.length * size.width * layout.unused;
-    
-                    // Знаходимо найменшу кількість відходів
-                    if (waste < minWaste) {
-                        minWaste = waste;
-                        optimalLayout = layout;
+                
+                var arrayLen = standardSizes.length
+                var sheetsQty = Array(arrayLen).fill(0);
+                var sheetsVariants = [];
+
+                var alive = true;
+                while (alive){
+                    var kitArea = 0;
+                    var tempLineEntry = {waste: 0, sheets: {}};
+                    for (var i = 0; i < arrayLen; i++){
+                        kitArea += sheetsQty[i] * standardSizes[i].area;
                     }
+                    var requiredArea = totalArea - kitArea
+                    if (requiredArea > 0){
+                        sheetsQty[arrayLen-1] = Math.ceil(requiredArea / standardSizes[arrayLen-1].area);
+                    } else {
+                        sheetsQty[arrayLen-1] = 0;
+                    }
+                    kitArea += sheetsQty[arrayLen-1] * standardSizes[arrayLen-1].area;
+
+                    var wasteArea = kitArea - totalArea;
+                    var wasteAreaPercentage = wasteArea * 100 / totalArea;
+                    if (wasteArea > totalArea){
+                        alive = false;
+                    }
+
+                    tempLineEntry.waste = Math.round(wasteAreaPercentage*10)/10;
+                    for (var i=0; i < arrayLen; i++){
+                        tempLineEntry.sheets[standardSizes[i].size] = sheetsQty[i];
+                    }
+                    sheetsVariants.push(tempLineEntry)
+
                 }
     
-                var cutPieces = getCutPieces(optimalLayout, gateWidth, gateHeight);
-                var pieceCounts = countCutPieces(cutPieces);
+                  
+
+    
+                
                 showResults(optimalLayout, cutPieces, pieceCounts);
             }
-    
-            function getLayout(gateWidth, gateHeight, sheetLength, sheetWidth) {
-                // Розміри воріт
-                var widthCuts = Math.ceil(gateWidth / sheetWidth);
-                var heightCuts = Math.ceil(gateHeight / sheetLength);
-    
-                // Розміщення на аркуші
-                var sheetLayout = {
-                    width: sheetWidth,
-                    length: sheetLength,
-                    count: widthCuts * heightCuts,
-                    unused: (widthCuts * sheetWidth * heightCuts * sheetLength - gateWidth * gateHeight) / (sheetWidth * sheetLength)
-                };
-    
-                return sheetLayout;
-            }
-    
-            function getCutPieces(layout, gateWidth, gateHeight) {
-                var cutPieces = [];
-    
-                var pieceWidth = gateWidth % layout.width;
-                if (pieceWidth > 0) {
-                    var pieceHeight = layout.length;
-                    cutPieces.push({ width: pieceWidth, height: pieceHeight });
-                }
-    
-                var pieceHeight = gateHeight % layout.length;
-                if (pieceHeight > 0) {
-                    var pieceWidth = layout.width;
-                    cutPieces.push({ width: pieceWidth, height: pieceHeight });
-                }
-    
-                return cutPieces;
-            }
-    
-            function countCutPieces(cutPieces) {
-                var pieceCounts = {};
-    
-                for (var i = 0; i < cutPieces.length; i++) {
-                    var piece = cutPieces[i];
-                    var key = piece.width + "x" + piece.height;
-    
-                    if (pieceCounts[key]) {
-                        pieceCounts[key]++;
-                    } else {
-                        pieceCounts[key] = 1;
-                    }
-                }
-    
-                return pieceCounts;
-            }
-    
+       
+   
             function showResults(layout, cutPieces, pieceCounts) {
                 var resultText = "Кількість листів: " + layout.count + "\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n";
                 resultText += layout.width + "\t" + layout.length + "\t" + layout.count;
