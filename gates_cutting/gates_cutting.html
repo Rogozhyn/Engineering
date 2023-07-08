@@ -24,7 +24,7 @@
                 while (alive){
                     var kitArea = 0;
                     var tempLineEntry = {waste: 0, sheets: {}};
-                    for (var i = 0; i < arrayLen; i++){
+                    for (var i = 0; i < arrayLen-1; i++){
                         kitArea += sheetsQty[i] * standardSizes[i].area;
                     }
                     var requiredArea = totalArea - kitArea
@@ -39,13 +39,36 @@
                     var wasteAreaPercentage = wasteArea * 100 / totalArea;
                     if (wasteArea > totalArea){
                         alive = false;
+                        break;
                     }
 
                     tempLineEntry.waste = Math.round(wasteAreaPercentage*10)/10;
                     for (var i=0; i < arrayLen; i++){
                         tempLineEntry.sheets[standardSizes[i].size] = sheetsQty[i];
                     }
-                    sheetsVariants.push(tempLineEntry)
+                    sheetsVariants.push(tempLineEntry);
+
+                    var plusOne = false;
+                    if (arrayLen == 1 || sheetsQty.slice(1).reduce((acc, curr) => acc + curr, 0) == 0){
+                        alive = false;
+                    } else if (arrayLen > 2){
+                        for (var i = 0; i < arrayLen-2; i++){
+                            if (sheetsQty.slice(i+2).reduce((acc, curr) => acc + curr, 0) == 0){
+                                sheetsQty[i+1] = 0;
+                                sheetsQty[i]++;
+                                plusOne = false;
+                                break;
+                            } else {
+                                plusOne = true;
+                            }
+                        }
+                    } else {
+                        plusOne = true;
+                    }
+
+                    if (plusOne){
+                        sheetsQty[arrayLen-2]++
+                    }
 
                 }
     
@@ -53,23 +76,17 @@
 
     
                 
-                showResults(optimalLayout, cutPieces, pieceCounts);
+                showResults(sheetsVariants);
             }
        
    
-            function showResults(layout, cutPieces, pieceCounts) {
-                var resultText = "Кількість листів: " + layout.count + "\n\nРозміщення на листах:\nШирина\tДовжина\tКількість\n";
-                resultText += layout.width + "\t" + layout.length + "\t" + layout.count;
-    
-                if (cutPieces.length > 0) {
-                    resultText += "\n\nПорізані кусочки:\nШирина\tДовжина\tКількість\n";
-                    for (var i = 0; i < cutPieces.length; i++) {
-                        var piece = cutPieces[i];
-                        var key = piece.width + "x" + piece.height;
-                        resultText += piece.width + "\t" + piece.height + "\t" + pieceCounts[key] + "\n";
-                    }
+            function showResults(variants) {
+                var resultText = "Result: \n"
+                for (var i = 0; i < variants.length; i++){
+                resultText += variants[i].waste + "\t" + variants[i].sheets["2500x1250"] + "\t" + variants[i].sheets["2000x1000"] + "\n";
                 }
     
+                    
                 document.getElementById("results").textContent = resultText;
             }
         </script>
@@ -82,7 +99,7 @@
         <label for="height">Висота воріт (мм):</label>
         <input type="text" id="height" name="height"><br>
 
-        <button onclick="calculateOptimalCuts()">Розрахувати</button>
+        <button onclick="calculateQtySheetsByArea()">Розрахувати</button>
 
         <h2>Результати:</h2>
         <pre id="results"></pre>

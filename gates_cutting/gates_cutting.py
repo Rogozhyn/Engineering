@@ -56,7 +56,10 @@ class Gates:
             if plus_one:
                 sheets_qty[-2] += 1
 
-        sheets_variants.sort(key=lambda sheets: sheets['waste'])
+        for item in sheets_variants:
+            print(item)
+
+        # sheets_variants.sort(key=lambda sheets: sheets['waste'])
         self.sheets_variants = sheets_variants
 
 
@@ -90,4 +93,4 @@ standard_sizes = {
 gates = Gates(3310, 3660, 2)
 
 gates.calc_qty_sheets_by_area()
-gates.print_sheets_variants()
+#gates.print_sheets_variants()
