@@ -3,20 +3,21 @@
     <head>
         <title>Підбір листів</title>
         <script>
+
+            // Стандартні розміри листів металу
+                var standardSizes = [
+                    { area: 2500*1250, size: '2500x1250' },
+                    { area: 2000*1000, size: '2000x1000' }
+                    // Додайте інші стандартні розміри, якщо потрібно
+                ];
+                var arrayLen = standardSizes.length
+
             function calculateQtySheetsByArea() {
                 // Парсимо данні з інпутів в body
                 var gateWidth = parseInt(document.getElementById("width").value);
                 var gateHeight = parseInt(document.getElementById("height").value);
                 var totalArea = gateWidth * gateHeight;
-
-                // Стандартні розміри листів металу
-                var standardSizes = [
-                    { length: 2500, width: 1250, area: 2500*1250, size: '2500x1250' },
-                    { length: 2000, width: 1000, area: 2000*1000, size: '2000x1000' }
-                    // Додайте інші стандартні розміри, якщо потрібно
-                ];
                 
-                var arrayLen = standardSizes.length
                 var sheetsQty = Array(arrayLen).fill(0);
                 var sheetsVariants = [];
 
@@ -72,18 +73,23 @@
 
                 }
     
-                  
-
-    
-                
+                sheetsVariants.sort(function(a, b) {return a.waste - b.waste;});
                 showResults(sheetsVariants);
             }
        
    
             function showResults(variants) {
-                var resultText = "Result: \n"
+                var resultText = "Втрати %"
+                for (i = 0; i < arrayLen; i ++){
+                    resultText += "\t" + standardSizes[i].size;
+                }
+                resultText += "\n"
                 for (var i = 0; i < variants.length; i++){
-                resultText += variants[i].waste + "\t" + variants[i].sheets["2500x1250"] + "\t" + variants[i].sheets["2000x1000"] + "\n";
+                resultText += variants[i].waste;
+                for (var j = 0; j < arrayLen; j++) {
+                    resultText += "\t\t" + variants[i].sheets[standardSizes[j].size];   
+                }
+                resultText += "\n"
                 }
     
                     
