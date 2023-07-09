@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <style>
+            h1 {
+                font-size: 16px;
+                font-family: Verdana, sans-serif;
+                color: gray;
+            }
+            h2, label, button, pre {
+                font-size: 14px;
+                font-family: Verdana, sans-serif;
+            }
+            pre {
+                color: coral;
+            }
+            
+        </style>
         <title>Підбір листів</title>
         <script>
 
@@ -77,7 +92,6 @@
                 showResults(sheetsVariants);
             }
        
-   
             function showResults(variants) {
                 var resultText = "Втрати %"
                 for (i = 0; i < arrayLen; i ++){
@@ -87,7 +101,7 @@
                 for (var i = 0; i < variants.length; i++){
                 resultText += variants[i].waste;
                 for (var j = 0; j < arrayLen; j++) {
-                    resultText += "\t\t" + variants[i].sheets[standardSizes[j].size];   
+                    resultText += "\t\t\t" + variants[i].sheets[standardSizes[j].size];   
                 }
                 resultText += "\n"
                 }
