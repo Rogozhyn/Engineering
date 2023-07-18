@@ -3,16 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <style>
             body {
                 background-color: azure;
                 font-family: Verdana, sans-serif;
                 font-size: 14px;
-            }
-            h1 {
-                font-size: 16px;
-                font-family: Verdana, sans-serif;
-                color: gray;
             }
             h2, p, label, button, pre {
                 font-size: 14px;
@@ -126,41 +122,45 @@
                 }
                 }
 
-    
-                    
+                document.getElementById("res").style.visibility = "visible"
                 document.getElementById("results").textContent = resultText;
             }
         </script>
     </head>
     <body>
-        <h1>Підбір варіантів комплектів листів для виготовлення металевих воріт</h1><hr>
-        <label for="width">Ширина воріт (мм):</label>
-        <input type="text" id="width" name="width"><br>
+        <header class="w3-container w3-teal">
+            <h1>Підбір варіантів комплектів листів для виготовлення металевих воріт</h1>
+        </header>
+        <div class="w3-container">
+            <label for="width">Ширина воріт (мм):</label>
+            <input type="text" id="width" name="width"><br>
 
-        <label for="height">Висота воріт (мм):</label>
-        <input type="text" id="height" name="height"><br>
+            <label for="height">Висота воріт (мм):</label>
+            <input type="text" id="height" name="height"><br>
 
-        <button onclick="calculateQtySheetsByArea()">Розрахувати</button>
+            <button onclick="calculateQtySheetsByArea()">Розрахувати</button>
 
-        <h2>Результати:</h2>
+            <h2 style="visibility:hidden;" id="res">Результати:</h2>
 
-        <table id="resultTable">
-            <thead>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+            <table id="resultTable">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <footer>
-            <hr>
-            <h2>Посилання</h2>
-            <p>Розробка:<br>
-                <a href="https://www.rogozhyn.com.ua/" target="_blank">Інжинер конструктор Михайло Рогожин</a><br>
-                <a href="mailto:info@rogozhyn.com.ua" target="_blank">info@rogozhyn.com.ua</a>
-            </p>
-            <p>Виготовлення та монтаж металоконструкцій:<br>
-                <a href="http://www.kreminstal.com/" target="_blank">ТОВ “Кремінь Сталь”</a><br>
-                <a href="mailto:kremenstal@ukr.net" target="_blank">kremenstal@ukr.net</a>
-            </p>
+            <div class="w3-container w3-teal">
+                <h2>Посилання</h2>
+                <p>Розробка:<br>
+                    <a href="https://www.rogozhyn.com.ua/" target="_blank">Інжинер конструктор Михайло Рогожин</a><br>
+                    <a href="mailto:info@rogozhyn.com.ua" target="_blank">info@rogozhyn.com.ua</a>
+                </p>
+                <p>Виготовлення та монтаж металоконструкцій:<br>
+                    <a href="http://www.kreminstal.com/" target="_blank">ТОВ “Кремінь Сталь”</a><br>
+                    <a href="mailto:kremenstal@ukr.net" target="_blank">kremenstal@ukr.net</a>
+                </p>
+            </div>
           </footer>
     </body>
 </html>
