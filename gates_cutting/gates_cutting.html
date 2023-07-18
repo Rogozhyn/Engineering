@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <style>
+            body {
+                max-width: 1000px;
+                margin: auto;
+                background-color: azure;
+                font-family: Verdana, sans-serif;
+                font-size: 14px;
+            }
+            h1, h2, p, label, button {
+                font-size: 14px;
+                font-family: Verdana, sans-serif;
+            }
+            pre {
+                color: coral;
+            }
+            td {
+                background-color: gray;
+                color: white;
+                text-align: center;
+            }
+            
+        </style>
+        <title>Підбір листів</title>
+        <link rel="icon" href="https://www.rogozhyn.com.ua/wp-content/uploads/2019/09/cropped-Значек-сайта-2-1-192x192.png" sizes="192x192" />
+        <script>
+
+            // Стандартні розміри листів металу
+                var standardSizes = [
+                    { area: 2500*1250, size: '2500x1250' },
+                    { area: 2000*1000, size: '2000x1000' }
+                    // Додайте інші стандартні розміри, якщо потрібно
+                ];
+                var arrayLen = standardSizes.length
+
+            function calculateQtySheetsByArea() {
+                // Парсимо данні з інпутів в body
+                var gateWidth = parseInt(document.getElementById("width").value);
+                var gateHeight = parseInt(document.getElementById("height").value);
+                var totalArea = gateWidth * gateHeight;
+                
+                var sheetsQty = Array(arrayLen).fill(0);
+                var sheetsVariants = [];
+
+                var alive = true;
+                while (alive){
+                    var kitArea = 0;
+                    var tempLineEntry = {waste: 0, sheets: {}};
+                    for (var i = 0; i < arrayLen-1; i++){
+                        kitArea += sheetsQty[i] * standardSizes[i].area;
+                    }
+                    var requiredArea = totalArea - kitArea
+                    if (requiredArea > 0){
+                        sheetsQty[arrayLen-1] = Math.ceil(requiredArea / standardSizes[arrayLen-1].area);
+                    } else {
+                        sheetsQty[arrayLen-1] = 0;
+                    }
+                    kitArea += sheetsQty[arrayLen-1] * standardSizes[arrayLen-1].area;
+
+                    var wasteArea = kitArea - totalArea;
+                    var wasteAreaPercentage = wasteArea * 100 / totalArea;
+                    if (wasteArea > totalArea){
+                        alive = false;
+                        break;
+                    }
+
+                    tempLineEntry.waste = Math.round(wasteAreaPercentage*10)/10;
+                    for (var i=0; i < arrayLen; i++){
+                        tempLineEntry.sheets[standardSizes[i].size] = sheetsQty[i];
+                    }
+                    sheetsVariants.push(tempLineEntry);
+
+                    var plusOne = false;
+                    if (arrayLen == 1 || sheetsQty.slice(1).reduce((acc, curr) => acc + curr, 0) == 0){
+                        alive = false;
+                    } else if (arrayLen > 2){
+                        for (var i = 0; i < arrayLen-2; i++){
+                            if (sheetsQty.slice(i+2).reduce((acc, curr) => acc + curr, 0) == 0){
+                                sheetsQty[i+1] = 0;
+                                sheetsQty[i]++;
+                                plusOne = false;
+                                break;
+                            } else {
+                                plusOne = true;
+                            }
+                        }
+                    } else {
+                        plusOne = true;
+                    }
+
+                    if (plusOne){
+                        sheetsQty[arrayLen-2]++
+                    }
+
+                }
+    
+                sheetsVariants.sort(function(a, b) {return a.waste - b.waste;});
+                showResults(sheetsVariants);
+            }
+       
+            function showResults(variants) {
+                var table = document.getElementById("resultTable");
+                var thead = table.getElementsByTagName("thead")[0];
+                var tbody = table.getElementsByTagName("tbody")[0];
+                // Очищення вмісту таблиці
+                thead.innerHTML = "";
+                tbody.innerHTML = "";
+
+                var theadRow = thead.insertRow();
+                theadRow.insertCell().innerHTML = "Втрати %";
+                for (i = 0; i < arrayLen; i ++){
+                    theadRow.insertCell().innerHTML = "Кількість листів " + standardSizes[i].size;
+                }
+                
+                for (var i = 0; i < variants.length; i++){
+                    var valueRow = tbody.insertRow();
+                    valueRow.insertCell().innerHTML = variants[i].waste;
+                for (var j = 0; j < arrayLen; j++) {
+                    valueRow.insertCell().innerHTML = variants[i].sheets[standardSizes[j].size];
+                }
+                }
+
+                document.getElementById("res").style.visibility = "visible"
+                document.getElementById("results").textContent = resultText;
+            }
+        </script>
+    </head>
+    <body>
+        <header class="w3-container w3-teal" style="padding: 10px; margin-top: 10px; text-align: center; border: 3px solid #73AD21;">
+            <h1 style="font-size: 20px;">Підбір варіантів комплектів листів для виготовлення металевих воріт</h1>
+        </header>
+
+        <div class="w3-container" style="padding: 20px;">
+            <label for="width">Ширина воріт (мм):</label>
+            <input type="text" id="width" name="width"><br>
+
+            <label for="height">Висота воріт (мм):</label>
+            <input type="text" id="height" name="height"><br>
+
+            <button onclick="calculateQtySheetsByArea()">Розрахувати &#128640;</button>
+
+            <h2 style="visibility:hidden;" id="res">Результати:</h2>
+
+            <table id="resultTable">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            <div class="w3-container w3-teal" style="padding: 10px; margin-top: 10px; border: 3px solid #73AD21;">
+                <p>Розробка:<br>
+                    <a href="https://www.rogozhyn.com.ua/" target="_blank">Інженер конструктор Михайло Рогожин</a><br>
+                    <a href="mailto:info@rogozhyn.com.ua" target="_blank">info@rogozhyn.com.ua</a>
+                </p>
+                <p>Виготовлення та монтаж металоконструкцій:<br>
+                    <a href="http://www.kreminstal.com/" target="_blank">ТОВ “Кремінь Сталь”</a><br>
+                    <a href="mailto:kremenstal@ukr.net" target="_blank">kremenstal@ukr.net</a>
+                </p>
+            </div>
+          </footer>
+    </body>
+</html>
