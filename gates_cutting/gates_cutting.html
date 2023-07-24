@@ -3,48 +3,79 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <link rel="stylesheet" href="../css/main.css">
-        <title>Підбір листів</title>
+
         <link rel="icon" href="https://www.rogozhyn.com.ua/wp-content/uploads/2019/09/cropped-Значек-сайта-2-1-192x192.png" sizes="192x192" />
-        <script type='text/javascript' src='../js/gates_cutting.js'></script>
+        <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous"> -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/main.css">
+
+        <title>Підбір листів для воріт</title>
     </head>
     <body>
-        <header class="w3-container w3-teal" style="padding: 10px; margin-top: 10px; text-align: center; border: 3px solid #73AD21;">
-            <h1 style="font-size: 20px;">Підбір варіантів комплектів листів для виготовлення металевих воріт</h1>
+        <header class="site-header">
+            <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+                <div class="container">
+                  <a class="navbar-brand mr-4" href="https://www.rogozhyn.com.ua/">Сайт Михайла РОГОЖИНА</a>
+                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                     </button>
+					
+                  <div class="collapse navbar-collapse" id="navbarToggle">
+
+                      <!-- Navbar left Side -->
+                      <div class="navbar-nav mr-auto">
+                          <a class="nav-item nav-link" href="https://www.rogozhyn.com.ua/">Головна</a>
+                          <a class="nav-item nav-link" href="#">Інженерія</a>
+                          <a class="nav-item nav-link" href="#">Програмування</a>
+                      </div>
+
+                      <!-- Navbar Right Side -->
+                      <div class="navbar-nav justify-content-end">
+                          <a class="nav-item nav-link" href="#">Про сайт</a>
+                          <a class="nav-item nav-link" href="#">Контакти</a>
+                      </div>
+                  </div>
+                </div>
+
+            </nav>
         </header>
+		<main role="main" class="container" style="text-align: center">
+            <h1 style="margin-top: 100px;">Підбір кількості листів металу для виготовлення воріт</h1>
+            <p>
+                <label  for="width">Ширина воріт (мм):</label><br>
+                <input  type="text" id="width" name="width">
+            </p>
 
-        <div class="w3-container" style="padding: 20px;">
-            <label for="width">Ширина воріт (мм):</label>
-            <input type="text" id="width" name="width"><br>
+            <p>
+                <label for="height">Висота воріт (мм):</label><br>
+                <input type="text" id="height" name="height"><br>
+            </p>
 
-            <label for="height">Висота воріт (мм):</label>
-            <input type="text" id="height" name="height"><br>
+                <button onclick="calculateQtySheetsByArea()">Розрахувати &#128640;</button>
 
-            <button onclick="calculateQtySheetsByArea()">Розрахувати &#128640;</button>
+                <h2  style="visibility:hidden; margin-top: 50px;" id="res">Результати:</h2>
 
-            <h2 style="visibility:hidden;" id="res">Результати:</h2>
-
-            <table id="resultTable">
-                <thead>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-
-        <footer>
-            <div class="w3-container w3-teal" style="padding: 10px; margin-top: 10px; border: 3px solid #73AD21;">
-                <p>Розробка:<br>
-                    <a href="https://www.rogozhyn.com.ua/" target="_blank">Інженер конструктор Михайло Рогожин</a><br>
-                    <a href="mailto:info@rogozhyn.com.ua" target="_blank">info@rogozhyn.com.ua</a>
-                </p>
-                <p>Виготовлення та монтаж металоконструкцій:<br>
-                    <a href="http://www.kreminstal.com/" target="_blank">ТОВ “Кремінь Сталь”</a><br>
-                    <a href="mailto:kremenstal@ukr.net" target="_blank">kremenstal@ukr.net</a>
-                </p>
+                <table style="margin-bottom: 50px;" class="table table-bordered table-striped" id="resultTable">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+		</main>
+        <footer class="site-footer bg-steel">
+            <div class="bg-steel fixed-bottom">
+                <div class="container">
+                    <p class="text-center">ФОП Рогожин М.В., 2019-2023</p>
+                </div>
             </div>
-          </footer>
+        </footer>
+    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>-->
+	<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type='text/javascript' src='js/gates_cutting.js'></script>
 
     </body>
 </html>
