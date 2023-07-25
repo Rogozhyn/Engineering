@@ -93,5 +93,6 @@ function showResults(variants) {
     }
     }
 
-    document.getElementById("res").style.visibility = "visible"
+    document.getElementById("res1").style.visibility = "visible"
+	document.getElementById("res2").style.visibility = "visible"
 }
