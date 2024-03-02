@@ -4,6 +4,9 @@ import time
 import tkinter as tk
 from tkinter import filedialog
 
+# Global variable to store the input file name
+input_filename = ""
+
 
 def clear_screen(timeout=0):
     time.sleep(timeout)
@@ -14,19 +17,22 @@ def clear_screen(timeout=0):
 
 
 def process_data():
+    global input_filename  # Zugriff auf die globale Variable
     clear_screen()
     year = year_entry.get() or "2024"
 
-    filename = filedialog.askopenfilename(title="Select File", filetypes=[("Text files", "*.txt")])
-    if not filename:
+    input_filename = filedialog.askopenfilename(title="Select Input File", filetypes=[("Text files", "*.txt")])
+    if not input_filename:
         return
 
+    output_dir = os.path.dirname(input_filename)
+    output_filename = os.path.join(output_dir, "formatted.txt")
+
     # Open the original file for reading
-    with open(filename, "r") as file:
+    with open(input_filename, "r") as file:
         lines = file.readlines()
 
     # Open a new file for writing
-    output_filename = "formatted.txt"
     with open(output_filename, "w") as file:
         # Write first line
         file.write("Date\tStart Time\tDuration\tProject Code\n")
@@ -49,9 +55,19 @@ def process_data():
     result_label.config(text=f"Formatted data saved in {output_filename}")
 
 
+def open_formatted_file():
+    global input_filename  # Zugriff auf die globale Variable
+    output_filename = os.path.join(os.path.dirname(input_filename), "formatted.txt")
+    if os.path.exists(output_filename):
+        os.system(f'start "" "{output_filename}"')
+    else:
+        result_label.config(text="Formatted file not found!")
+
+
 # Create GUI
 root = tk.Tk()
 root.title("Data Formatter")
+root.geometry("500x125")
 
 year_label = tk.Label(root, text="Enter the year:")
 year_label.pack()
@@ -64,5 +80,8 @@ process_button.pack()
 
 result_label = tk.Label(root, text="")
 result_label.pack()
+
+open_button = tk.Button(root, text="Open Formatted File", command=open_formatted_file)
+open_button.pack()
 
 root.mainloop()
