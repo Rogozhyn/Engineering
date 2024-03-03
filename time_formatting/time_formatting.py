@@ -1,6 +1,4 @@
 import os
-import platform
-import time
 import tkinter as tk
 from tkinter import filedialog
 
@@ -8,17 +6,8 @@ from tkinter import filedialog
 input_filename = ""
 
 
-def clear_screen(timeout=0):
-    time.sleep(timeout)
-    if platform.system() == 'Linux':
-        os.system('clear')
-    else:
-        os.system('cls')
-
-
 def process_data():
-    global input_filename  # Zugriff auf die globale Variable
-    clear_screen()
+    global input_filename  # Access to the global variable
     year = year_entry.get() or "2024"
 
     input_filename = filedialog.askopenfilename(title="Select Input File", filetypes=[("Text files", "*.txt")])
@@ -51,12 +40,11 @@ def process_data():
             row += 1
         file.write(f"\tTotal:\t=SUM(C2:C{str(row)})")
 
-    clear_screen()
     result_label.config(text=f"Formatted data saved in {output_filename}")
 
 
 def open_formatted_file():
-    global input_filename  # Zugriff auf die globale Variable
+    global input_filename  # Access to the global variable
     output_filename = os.path.join(os.path.dirname(input_filename), "formatted.txt")
     if os.path.exists(output_filename):
         os.system(f'start "" "{output_filename}"')
@@ -67,7 +55,7 @@ def open_formatted_file():
 # Create GUI
 root = tk.Tk()
 root.title("Data Formatter")
-root.geometry("500x125")
+root.geometry("600x150")
 
 year_label = tk.Label(root, text="Enter the year:")
 year_label.pack()
